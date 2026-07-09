@@ -146,7 +146,7 @@
   #cfbrt-widget tbody td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--chalk);vertical-align:top;}
   #cfbrt-widget tbody tr:hover{background:var(--row-hover);}
   #cfbrt-widget .col-viewers{color:var(--gold);font-weight:600;white-space:nowrap;}
-  #cfbrt-widget .col-network{color:var(--turf-bright);white-space:nowrap;}
+  #cfbrt-widget .col-network{color:var(--turf-bright);white-space:nowrap;line-height:1.5;}
   #cfbrt-widget .col-game{max-width:150px;white-space:normal;word-break:break-word;}
   #cfbrt-widget .table-scroll{max-height:560px;overflow-y:auto;overflow-x:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;}
   #cfbrt-widget .table-scroll table{font-size:12.5px;}
@@ -292,6 +292,11 @@ function buildFilters(){
   });
 }
 
+function fmtNetwork(str){
+  const parts = str.split('/').map(s=>s.trim()).filter(Boolean);
+  return parts.join('<br>');
+}
+
 function shortenDateTime(str, hideRoundLabels){
   let s = str.replace(/\u00a0/g, ' ');
   s = s.replace(/^(Mon|Tue|Tues|Wed|Thu|Thurs|Fri|Sat|Sun)[a-zA-Z]*\.?,?\s+/, '');
@@ -338,7 +343,7 @@ function renderTable(){
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
       <td class="col-game">${r.game}</td>
       <td>${shortenDateTime(r.dateTime, state.phase !== "CFP Playoff")}</td>
-      <td class="col-network">${r.network}</td>
+      <td class="col-network">${fmtNetwork(r.network)}</td>
     </tr>
   `).join("");
 
