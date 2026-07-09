@@ -147,6 +147,7 @@
   #cfbrt-widget tbody tr:hover{background:var(--row-hover);}
   #cfbrt-widget .col-viewers{color:var(--gold);font-weight:600;white-space:nowrap;}
   #cfbrt-widget .col-network{color:var(--turf-bright);white-space:nowrap;}
+  #cfbrt-widget .col-game{max-width:150px;white-space:normal;word-break:break-word;}
   #cfbrt-widget .table-scroll{max-height:560px;overflow-y:auto;overflow-x:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;}
   #cfbrt-widget .table-scroll table{font-size:12.5px;}
   #cfbrt-widget footer{margin-top:56px;text-align:center;color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
@@ -162,6 +163,7 @@
   #cfbrt-widget .filters select, #cfbrt-widget .filters input{font-size:16px;width:100%;padding:10px;}
   #cfbrt-widget .filters input{min-width:0;}
   #cfbrt-widget .reset-btn{width:100%;padding:10px;font-size:14px;}
+  #cfbrt-widget .col-game{max-width:110px;font-size:11.5px;}
 }
 </style>
 
@@ -284,14 +286,10 @@ function buildFilters(){
   });
 }
 
-function shortenDateTime(str, hideWeek, hideRoundLabels){
+function shortenDateTime(str, hideRoundLabels){
   let s = str.replace(/\u00a0/g, ' ');
   s = s.replace(/^(Mon|Tue|Tues|Wed|Thu|Thurs|Fri|Sat|Sun)[a-zA-Z]*\.?,?\s+/, '');
-  if(hideWeek){
-    s = s.replace(/Week\s+\d+\s*[\u2013\u2011-]\s*/i, '');
-  } else {
-    s = s.replace(/Week\s+(\d+)\s*[\u2013\u2011-]\s*/i, 'Wk $1: ');
-  }
+  s = s.replace(/Week\s+\d+\s*[\u2013\u2011-]\s*/i, '');
   if(hideRoundLabels){
     s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, '');
     s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, '');
@@ -332,8 +330,8 @@ function renderTable(){
   document.getElementById('tableBody').innerHTML = rows.map(r=>`
     <tr>
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
-      <td>${r.game}</td>
-      <td>${shortenDateTime(r.dateTime, !state.week, state.phase !== "CFP Playoff")}</td>
+      <td class="col-game">${r.game}</td>
+      <td>${shortenDateTime(r.dateTime, state.phase !== "CFP Playoff")}</td>
       <td class="col-network">${r.network}</td>
     </tr>
   `).join("");
