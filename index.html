@@ -39,6 +39,8 @@
     display:block;
     max-width:100%;
     overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
     background:
       radial-gradient(ellipse at top left, var(--hero-tint), transparent 55%),
       var(--bg);
@@ -47,21 +49,42 @@
     padding:0 0 64px 0;
   }
   #cfbrt-widget .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  #cfbrt-widget .theme-toggle{
-    display:flex;align-items:center;gap:8px;
+  #cfbrt-widget .theme-switch{
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    line-height:0;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #cfbrt-widget .theme-switch-track{
+    display:inline-block;
+    width:46px;
+    height:26px;
+    border-radius:999px;
     background:var(--surface);
     border:1px solid var(--line);
-    color:var(--chalk-dim);
-    padding:7px 14px;
-    border-radius:999px;
-    cursor:pointer;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    letter-spacing:.04em;
-    text-transform:uppercase;
+    position:relative;
+    transition:background-color .15s ease, border-color .15s ease;
   }
-  #cfbrt-widget .theme-toggle:hover{border-color:var(--gold);color:var(--chalk);}
-  #cfbrt-widget .theme-toggle .icon{font-size:13px;line-height:1;}
+  #cfbrt-widget .theme-switch:hover .theme-switch-track{border-color:var(--gold);}
+  #cfbrt-widget .theme-switch-thumb{
+    position:absolute;
+    top:2px;
+    left:2px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--gold);
+    color:#FFFFFF;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    transition:left .15s ease;
+  }
+  #cfbrt-widget[data-theme="dark"] .theme-switch-thumb{left:22px;}
   #cfbrt-widget section{margin-top:44px;}
   #cfbrt-widget .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
   #cfbrt-widget .section-head h2{
@@ -82,6 +105,8 @@
     margin-bottom:14px;
     cursor:pointer;
     max-width:100%;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
   }
   #cfbrt-widget .period-select:hover{border-color:var(--turf-bright);}
   #cfbrt-widget .filters{
@@ -96,14 +121,15 @@
     padding:8px 10px;
     font-family:'Inter',sans-serif;
     font-size:13px;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
   }
   #cfbrt-widget .filters input{flex:1;min-width:160px;}
-  #cfbrt-widget .filters .count{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--turf-bright);margin-left:auto;
-  }
   #cfbrt-widget .reset-btn{
     background:transparent;border:1px solid var(--line);color:var(--chalk-dim);
     padding:8px 12px;border-radius:6px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
   }
   #cfbrt-widget .reset-btn:hover{border-color:var(--gold);color:var(--gold);}
   #cfbrt-widget table{width:100%;min-width:560px;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
@@ -112,6 +138,8 @@
     text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;
     border-bottom:1px solid var(--line);cursor:pointer;user-select:none;
     position:sticky;top:0;background:var(--bg);
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
   }
   #cfbrt-widget thead th:hover{color:var(--gold);}
   #cfbrt-widget thead th.active{color:var(--gold);}
@@ -129,10 +157,11 @@
   #cfbrt-widget .wrap{padding:0 14px;}
   #cfbrt-widget section{margin-top:28px;}
   #cfbrt-widget .section-head h2{font-size:17px;}
-  #cfbrt-widget .theme-toggle{padding:6px 11px;font-size:11px;}
-  #cfbrt-widget .filters{padding:12px;}
-  #cfbrt-widget .filters select, #cfbrt-widget .filters input{font-size:14px;}
-  #cfbrt-widget .period-select{font-size:11px;padding:6px 10px;}
+  #cfbrt-widget .period-select{font-size:11px;padding:8px 10px;width:100%;}
+  #cfbrt-widget .filters{padding:12px;flex-direction:column;align-items:stretch;}
+  #cfbrt-widget .filters select, #cfbrt-widget .filters input{font-size:16px;width:100%;padding:10px;}
+  #cfbrt-widget .filters input{min-width:0;}
+  #cfbrt-widget .reset-btn{width:100%;padding:10px;font-size:14px;}
 }
 </style>
 
@@ -143,8 +172,10 @@
   <section style="margin-top:32px;">
     <div class="section-head">
       <h2>All Broadcasts</h2>
-      <button class="theme-toggle" id="themeToggle" type="button" style="position:static;">
-        <span class="icon" id="themeIcon">☾</span><span id="themeLabel">Dark</span>
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Toggle dark mode">
+        <span class="theme-switch-track">
+          <span class="theme-switch-thumb" id="themeThumb"><span id="themeIcon">☾</span></span>
+        </span>
       </button>
     </div>
     <select class="period-select" id="periodSelect"></select>
@@ -152,7 +183,6 @@
       <select id="fNetwork"></select>
       <input id="fSearch" type="text" placeholder="Search team or game…">
       <button class="reset-btn" id="fReset">Reset</button>
-      <span class="count" id="fCount"></span>
     </div>
     <div class="table-scroll">
       <table>
@@ -199,8 +229,8 @@ function buildPeriodToggle(){
   const postseasonPhases = PHASE_ORDER.filter(p=>p!=="Regular Season" && DATA.some(r=>r.phase===p));
 
   const options = [];
-  options.push({label:"All", phase:"", week:""});
-  weekNums.forEach(w=>options.push({label:"Week "+w, phase:"Regular Season", week:String(w)}));
+  options.push({label:"All Games", phase:"", week:""});
+  weekNums.forEach(w=>options.push({label:"Wk. "+w, phase:"Regular Season", week:String(w)}));
   postseasonPhases.forEach(p=>{
     const shortLabel = {
       "Conference Championship":"Conf. Championships",
@@ -271,8 +301,6 @@ function renderTable(){
     return 0;
   });
 
-  document.getElementById('fCount').textContent = rows.length + ' of ' + DATA.length + ' games';
-
   document.getElementById('tableBody').innerHTML = rows.map(r=>`
     <tr>
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
@@ -290,11 +318,10 @@ function renderTable(){
 function buildThemeToggle(){
   const btn = document.getElementById('themeToggle');
   const icon = document.getElementById('themeIcon');
-  const label = document.getElementById('themeLabel');
   function applyTheme(mode){
     document.getElementById('cfbrt-widget').dataset.theme = mode;
     icon.textContent = mode === 'dark' ? '☀' : '☾';
-    label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
   }
   applyTheme('light');
   btn.addEventListener('click', ()=>{
