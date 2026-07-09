@@ -296,6 +296,10 @@ function buildFilters(){
   });
 }
 
+function fmtGame(str){
+  return str.replace(/^(National Championship|Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
+}
+
 function fmtNetwork(str){
   const parts = str.split('/').map(s=>s.trim()).filter(Boolean);
   return parts.join('<br>');
@@ -345,7 +349,7 @@ function renderTable(){
   document.getElementById('tableBody').innerHTML = rows.map(r=>`
     <tr>
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
-      <td class="col-game">${r.game}</td>
+      <td class="col-game">${fmtGame(r.game)}</td>
       <td>${shortenDateTime(r.dateTime, state.phase !== "CFP Playoff")}</td>
       <td class="col-network">${fmtNetwork(r.network)}</td>
     </tr>
