@@ -148,6 +148,8 @@
   #cfbrt-widget .col-viewers{color:var(--gold);font-weight:600;white-space:nowrap;}
   #cfbrt-widget .col-network{color:var(--turf-bright);white-space:nowrap;line-height:1.5;}
   #cfbrt-widget .col-game{max-width:150px;white-space:normal;word-break:break-word;}
+  #cfbrt-widget .col-phase{color:var(--chalk-dim);white-space:nowrap;}
+  #cfbrt-widget .col-datetime{line-height:1.5;white-space:nowrap;}
   #cfbrt-widget .table-scroll{max-height:560px;overflow-y:auto;overflow-x:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;}
   #cfbrt-widget .table-scroll table{font-size:12.5px;}
   #cfbrt-widget footer{margin-top:56px;text-align:center;color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
@@ -170,10 +172,12 @@
     white-space:normal;overflow-wrap:break-word;word-break:break-word;
     font-size:11px;padding:8px 5px;
   }
-  #cfbrt-widget thead th:nth-child(1), #cfbrt-widget tbody td:nth-child(1){width:16%;}
-  #cfbrt-widget thead th:nth-child(2), #cfbrt-widget tbody td:nth-child(2){width:34%;}
-  #cfbrt-widget thead th:nth-child(3), #cfbrt-widget tbody td:nth-child(3){width:28%;}
-  #cfbrt-widget thead th:nth-child(4), #cfbrt-widget tbody td:nth-child(4){width:22%;}
+  #cfbrt-widget thead th:nth-child(1), #cfbrt-widget tbody td:nth-child(1){width:14%;}
+  #cfbrt-widget thead th:nth-child(2), #cfbrt-widget tbody td:nth-child(2){width:28%;}
+  #cfbrt-widget thead th:nth-child(3), #cfbrt-widget tbody td:nth-child(3){width:22%;}
+  #cfbrt-widget thead th:nth-child(4), #cfbrt-widget tbody td:nth-child(4){width:18%;}
+  #cfbrt-widget thead th:nth-child(5), #cfbrt-widget tbody td:nth-child(5){width:18%;}
+  #cfbrt-widget .col-phase{white-space:normal;}
 }
 </style>
 
@@ -204,6 +208,7 @@
             <th data-col="game">Game</th>
             <th data-col="dateTime">Date / Time</th>
             <th data-col="network">Network</th>
+            <th data-col="phase">Phase</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -296,8 +301,44 @@ function buildFilters(){
   });
 }
 
-function fmtGame(str){
-  return str.replace(/^(National Championship|Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
+function fmtGame(r){
+  let s = r.game;
+  s = s.replace(/^(National Championship|Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
+  if(r.phase === 'Bowl Game'){
+    s = s.replace(/^[^:]+Bowl\s*:\s*/i, '');
+  }
+  return s;
+}
+
+function phaseDisplay(r){
+  if(r.phase === 'CFP Playoff'){
+    const m = r.dateTime.match(/(National Championship|Quarterfinal|Semifinal|First Round)/i);
+    if(m){
+      const map = {"national championship":"National Championship","quarterfinal":"Quarterfinal","semifinal":"Semifinal","first round":"R1"};
+      return map[m[1].toLowerCase()] || m[1];
+    }
+    return "CFP";
+  }
+  if(r.phase === 'Bowl Game'){
+    const m = r.game.match(/^([^:]+Bowl)\s*:/i);
+    return m ? m[1] : r.phase;
+  }
+  if(r.phase === 'Regular Season' && r.week){
+    return 'Wk ' + r.week;
+  }
+  if(r.phase === 'Conference Championship'){
+    return 'Conf. Champ.';
+  }
+  return r.phase;
+}
+
+function fmtDateTime(str){
+  const s = shortenDateTime(str);
+  const idx = s.indexOf(',');
+  if(idx === -1) return s;
+  const datePart = s.slice(0, idx).trim();
+  const timePart = s.slice(idx+1).trim();
+  return datePart + '<br>' + timePart;
 }
 
 function fmtNetwork(str){
@@ -305,21 +346,14 @@ function fmtNetwork(str){
   return parts.join('<br>');
 }
 
-function shortenDateTime(str, hideRoundLabels){
+function shortenDateTime(str){
   let s = str.replace(/\u00a0/g, ' ');
   s = s.replace(/^(Mon|Tue|Tues|Wed|Thu|Thurs|Fri|Sat|Sun)[a-zA-Z]*\.?,?\s+/, '');
   s = s.replace(/Week\s+\d+\s*[\u2013\u2011-]\s*/i, '');
-  if(hideRoundLabels){
-    s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, '');
-    s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, '');
-    s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, '');
-    s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, '');
-  } else {
-    s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, 'QF: ');
-    s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, 'SF: ');
-    s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, 'R1: ');
-    s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, 'NC: ');
-  }
+  s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, '');
+  s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, '');
+  s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, '');
+  s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, '');
   s = s.replace(/p\.m\./gi, 'pm');
   s = s.replace(/a\.m\./gi, 'am');
   s = s.replace(/\b(Jan|Feb|Mar|Apr|Aug|Sept|Sep|Oct|Nov|Dec)\./g, '$1');
@@ -349,9 +383,10 @@ function renderTable(){
   document.getElementById('tableBody').innerHTML = rows.map(r=>`
     <tr>
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
-      <td class="col-game">${fmtGame(r.game)}</td>
-      <td>${shortenDateTime(r.dateTime, state.phase !== "CFP Playoff")}</td>
+      <td class="col-game">${fmtGame(r)}</td>
+      <td class="col-datetime">${fmtDateTime(r.dateTime)}</td>
       <td class="col-network">${fmtNetwork(r.network)}</td>
+      <td class="col-phase">${phaseDisplay(r)}</td>
     </tr>
   `).join("");
 
