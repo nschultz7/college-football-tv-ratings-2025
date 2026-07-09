@@ -284,6 +284,34 @@ function buildFilters(){
   });
 }
 
+function shortenDateTime(str, hideWeek, hideRoundLabels){
+  let s = str.replace(/\u00a0/g, ' ');
+  s = s.replace(/^(Mon|Tue|Tues|Wed|Thu|Thurs|Fri|Sat|Sun)[a-zA-Z]*\.?,?\s+/, '');
+  if(hideWeek){
+    s = s.replace(/Week\s+\d+\s*[\u2013\u2011-]\s*/i, '');
+  } else {
+    s = s.replace(/Week\s+(\d+)\s*[\u2013\u2011-]\s*/i, 'Wk $1: ');
+  }
+  if(hideRoundLabels){
+    s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, '');
+    s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, '');
+    s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, '');
+    s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, '');
+  } else {
+    s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, 'QF: ');
+    s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, 'SF: ');
+    s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, 'R1: ');
+    s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, 'NC: ');
+  }
+  s = s.replace(/p\.m\./gi, 'pm');
+  s = s.replace(/a\.m\./gi, 'am');
+  s = s.replace(/\b(Jan|Feb|Mar|Apr|Aug|Sept|Sep|Oct|Nov|Dec)\./g, '$1');
+  s = s.replace(/\bNoon\b/i, '12pm');
+  s = s.replace(/\u2013/g, '-');
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+}
+
 function renderTable(){
   let rows = DATA.filter(r=>{
     if(state.phase && r.phase!==state.phase) return false;
@@ -305,7 +333,7 @@ function renderTable(){
     <tr>
       <td class="col-viewers">${fmtViewers(r.viewers)}</td>
       <td>${r.game}</td>
-      <td>${r.dateTime}</td>
+      <td>${shortenDateTime(r.dateTime, !state.week, state.phase !== "CFP Playoff")}</td>
       <td class="col-network">${r.network}</td>
     </tr>
   `).join("");
