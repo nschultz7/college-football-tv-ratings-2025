@@ -303,7 +303,7 @@ function buildFilters(){
 
 function fmtGame(r){
   let s = r.game;
-  s = s.replace(/^(National Championship|Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
+  s = s.replace(/^(Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
   if(r.phase === 'Bowl Game'){
     s = s.replace(/^[^:]+Bowl\s*:\s*/i, '');
   }
@@ -313,11 +313,10 @@ function fmtGame(r){
 function phaseDisplay(r){
   if(r.phase === 'CFP Playoff'){
     const m = r.dateTime.match(/(National Championship|Quarterfinal|Semifinal|First Round)/i);
-    if(m){
-      const map = {"national championship":"National Championship","quarterfinal":"Quarterfinal","semifinal":"Semifinal","first round":"R1"};
-      return map[m[1].toLowerCase()] || m[1];
+    if(m && /first round/i.test(m[1])){
+      return 'CFP: R1';
     }
-    return "CFP";
+    return 'CFP';
   }
   if(r.phase === 'Bowl Game'){
     const m = r.game.match(/^([^:]+Bowl)\s*:/i);
