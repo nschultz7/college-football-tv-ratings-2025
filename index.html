@@ -1,484 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On3 College Football TV Ratings Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  #cfbrt-widget{
-    --bg: #FFFFFF;
-    --surface: #F7F7F8;
-    --surface-2: #EFEFF0;
-    --line: #E2E2E4;
-    --turf: #B10F12;
-    --turf-bright: #1A1C1F;
-    --chalk: #17181B;
-    --chalk-dim: #6B6E73;
-    --gold: #E91518;
-    --crimson: #E91518;
-    --hero-tint: rgba(233,21,24,0.06);
-    --grid-tint: rgba(0,0,0,0.035);
-    --card-shadow: rgba(0,0,0,.25);
-    --row-hover: rgba(233,21,24,0.05);
-    color-scheme: light;
+  :root {
+    --primary: #E91518;
+    --secondary: #FFFFFF;
+    --bg: #0E0E10;
+    --surface: #19191C;
+    --surface-2: #212124;
+    --border: #2E2E32;
+    --text: #F4F4F5;
+    --text-dim: #A2A2A8;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
   }
-  #cfbrt-widget[data-theme="dark"]{
-    --bg: #121316;
-    --surface: #1B1D21;
-    --surface-2: #24262B;
-    --line: #34363B;
-    --turf: #E91518;
-    --turf-bright: #F2F2F3;
-    --chalk: #F2F1EE;
-    --chalk-dim: #9A9DA3;
-    --gold: #E91518;
-    --crimson: #E91518;
-    --hero-tint: rgba(233,21,24,0.14);
-    --grid-tint: rgba(255,255,255,0.05);
-    --card-shadow: rgba(0,0,0,.6);
-    --row-hover: rgba(233,21,24,0.14);
-    color-scheme: dark;
+  [data-theme="light"] {
+    --bg: #F5F5F6;
+    --surface: #FFFFFF;
+    --surface-2: #F0F0F1;
+    --border: #E1E1E3;
+    --text: #17171A;
+    --text-dim: #6B6B72;
   }
-  #cfbrt-widget{transition:background-color .15s ease, color .15s ease;}
-  #cfbrt-widget, #cfbrt-widget *{box-sizing:border-box;}
-  #cfbrt-widget{
-    display:block;
-    max-width:100%;
-    overflow-x:hidden;
-    -webkit-text-size-adjust:100%;
-    text-size-adjust:100%;
-    background:
-      radial-gradient(ellipse at top left, var(--hero-tint), transparent 55%),
-      var(--bg);
-    color:var(--chalk);
-    font-family:'Inter',sans-serif;
-    padding:0 0 64px 0;
-  }
-  #cfbrt-widget .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  #cfbrt-widget .theme-switch{
-    background:none;
-    border:none;
-    padding:0;
-    cursor:pointer;
-    line-height:0;
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  #cfbrt-widget .theme-switch-track{
-    display:inline-block;
-    width:46px;
-    height:26px;
-    border-radius:999px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    position:relative;
-    transition:background-color .15s ease, border-color .15s ease;
-  }
-  #cfbrt-widget .theme-switch:hover .theme-switch-track{border-color:var(--gold);}
-  #cfbrt-widget .theme-switch-thumb{
-    position:absolute;
-    top:2px;
-    left:2px;
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    background:var(--gold);
-    color:#FFFFFF;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:11px;
-    transition:left .15s ease;
-  }
-  #cfbrt-widget[data-theme="dark"] .theme-switch-thumb{left:22px;}
-  #cfbrt-widget section{margin-top:44px;}
-  #cfbrt-widget .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
-  #cfbrt-widget .section-head h2{
-    font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
-    font-size:20px;letter-spacing:.02em;color:var(--chalk);margin:0;
-    display:flex;align-items:center;gap:10px;
-  }
-  #cfbrt-widget .section-head h2::before{content:"";width:4px;height:20px;background:var(--turf);display:inline-block;border-radius:2px;}
-  #cfbrt-widget .section-note{font-size:12.5px;color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;}
-  #cfbrt-widget .period-select{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;letter-spacing:.04em;
-    background:var(--surface-2);
-    color:var(--chalk);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:8px 12px;
-    margin-bottom:14px;
-    cursor:pointer;
-    max-width:100%;
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  #cfbrt-widget .period-select:hover{border-color:var(--turf-bright);}
-  #cfbrt-widget .filters{
-    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px;
-  }
-  #cfbrt-widget .filters select, #cfbrt-widget .filters input{
-    background:var(--surface-2);
-    color:var(--chalk);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:8px 10px;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  #cfbrt-widget .filters input{flex:1;min-width:160px;}
-  #cfbrt-widget .reset-btn{
-    background:transparent;border:1px solid var(--line);color:var(--chalk-dim);
-    padding:8px 12px;border-radius:6px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  #cfbrt-widget .reset-btn:hover{border-color:var(--gold);color:var(--gold);}
-  #cfbrt-widget table{width:100%;min-width:560px;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
-  #cfbrt-widget thead th{
-    text-align:left;padding:10px 12px;color:var(--chalk-dim);
-    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;
-    border-bottom:1px solid var(--line);cursor:pointer;user-select:none;
-    position:sticky;top:0;background:var(--bg);
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  #cfbrt-widget thead th:hover{color:var(--gold);}
-  #cfbrt-widget thead th.active{color:var(--gold);}
-  #cfbrt-widget tbody td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--chalk);vertical-align:top;}
-  #cfbrt-widget tbody tr:hover{background:var(--row-hover);}
-  #cfbrt-widget .col-viewers{color:var(--gold);font-weight:600;white-space:nowrap;}
-  #cfbrt-widget .col-network{color:var(--turf-bright);white-space:nowrap;line-height:1.5;}
-  #cfbrt-widget .col-game{max-width:150px;white-space:normal;word-break:break-word;}
-  #cfbrt-widget .col-phase{color:var(--chalk-dim);white-space:nowrap;}
-  #cfbrt-widget .col-datetime{line-height:1.5;white-space:nowrap;}
-  #cfbrt-widget .table-scroll{max-height:560px;overflow-y:auto;overflow-x:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;}
-  #cfbrt-widget .table-scroll table{font-size:12.5px;}
-  #cfbrt-widget footer{margin-top:56px;text-align:center;color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
-  #cfbrt-widget ::-webkit-scrollbar{width:8px;height:8px;}
-  #cfbrt-widget ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
 
-  @media (max-width:600px){
-  #cfbrt-widget .wrap{padding:0 14px;}
-  #cfbrt-widget section{margin-top:28px;}
-  #cfbrt-widget .section-head h2{font-size:17px;}
-  #cfbrt-widget .period-select{font-size:11px;padding:8px 10px;width:100%;}
-  #cfbrt-widget .filters{padding:12px;flex-direction:column;align-items:stretch;}
-  #cfbrt-widget .filters select, #cfbrt-widget .filters input{font-size:16px;width:100%;padding:10px;}
-  #cfbrt-widget .filters input{min-width:0;}
-  #cfbrt-widget .reset-btn{width:100%;padding:10px;font-size:14px;}
-  #cfbrt-widget .table-scroll{overflow-x:hidden;max-height:none;overflow-y:visible;border:none;}
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
 
-  #cfbrt-widget table{display:block;width:100%;min-width:0;max-width:100%;}
-  #cfbrt-widget thead{display:none;}
-  #cfbrt-widget thead tr{display:flex;flex-wrap:wrap;gap:6px;}
-  #cfbrt-widget thead th{
-    display:inline-flex;align-items:center;
-    position:static;
-    width:auto;max-width:none;
-    background:var(--surface-2);
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:6px 11px;
-    font-size:10px;
-    white-space:nowrap;overflow:visible;text-overflow:clip;
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
   }
-  #cfbrt-widget thead th.active{border-color:var(--gold);}
 
-  #cfbrt-widget tbody{display:block;}
-  #cfbrt-widget tbody tr{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
-    grid-template-areas:
-      "game game viewers"
-      "datetime network phase";
-    column-gap:8px;
-    row-gap:10px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:12px 14px;
-    margin-top:12px;
-    max-width:100%;
-    transition:transform .1s ease, background-color .1s ease;
+  header.page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 16px;
   }
-  #cfbrt-widget tbody tr:first-child{margin-top:16px;}
-  #cfbrt-widget tbody tr:active{transform:scale(0.98);background:var(--surface-2);}
 
-  #cfbrt-widget tbody td{
-    display:block;
-    width:100%;max-width:100%;min-width:0;
-    padding:0;
-    font-size:11px;
-    white-space:normal !important;overflow-wrap:normal;word-break:normal;
-    text-align:left;
-    overflow:hidden;
+  .title-block .eyebrow {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin: 0 0 4px;
   }
-  #cfbrt-widget tbody td::before{
-    content:attr(data-label);
-    display:block;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:8.5px;text-transform:uppercase;letter-spacing:.02em;
-    color:var(--chalk-dim);margin-bottom:2px;
-    white-space:normal;
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.02;
+    margin: 0;
+    letter-spacing: -0.01em;
   }
-  #cfbrt-widget tbody td.col-game{
-    grid-area:game;
-    font-weight:700;font-size:11.5px;color:var(--chalk);
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
+
+  .theme-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
-  #cfbrt-widget tbody td.col-game::before{content:none;}
-  #cfbrt-widget tbody td.col-viewers{
-    grid-area:viewers;
-    text-align:right;
-    align-self:start;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
+  .theme-toggle:hover { border-color: var(--primary); }
+  .theme-toggle:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, th[data-sort]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
-  #cfbrt-widget tbody td.col-viewers::before{text-align:right;}
-  #cfbrt-widget tbody td.col-datetime{grid-area:datetime;}
-  #cfbrt-widget tbody td.col-network{grid-area:network;}
-  #cfbrt-widget tbody td.col-phase{grid-area:phase;}
-  #cfbrt-widget .col-phase{white-space:normal;word-break:normal;overflow-wrap:normal;}
-}
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .search-box {
+    flex: 1 1 220px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px 10px 34px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+  .search-box::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    transform: translateY(-50%);
+    border: 2px solid var(--text-dim);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .search-box::after {
+    content: "";
+    position: absolute;
+    left: 21px;
+    top: 60%;
+    width: 6px;
+    height: 2px;
+    background: var(--text-dim);
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .meta-row {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  /* ---- Table (desktop) ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 12px 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th:hover { color: var(--primary); }
+  thead th .arrow { margin-left: 4px; opacity: 0.5; font-size: 10px; }
+  thead th.active .arrow { opacity: 1; color: var(--primary); }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  td.col-viewers { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--primary); white-space: nowrap; }
+  td.col-game { font-weight: 600; }
+  td.col-phase, th.col-phase {
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
+  }
+
+  .net-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border: 1px solid var(--nc, var(--border));
+    color: var(--nc, var(--text));
+    background: color-mix(in srgb, var(--nc, var(--text-dim)) 12%, transparent);
+    white-space: nowrap;
+    margin: 2px 4px 2px 0;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+    display: none;
+  }
+
+  footer.page-foot {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- Mobile cards ---- */
+  .card-list { display: none; }
+
+  @media (max-width: 720px) {
+    table { display: none; }
+    .card-list { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 14px 12px;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .card-game {
+      font-weight: 600;
+      font-size: 14.5px;
+      line-height: 1.3;
+    }
+    .card-viewers {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--primary);
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .card-viewers small {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .card-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      padding-top: 9px;
+    }
+    .card-bottom .dot { opacity: 0.5; }
+    .card-bottom .card-phase {
+      overflow-wrap: normal;
+      word-break: normal;
+      white-space: nowrap;
+    }
+  }
 </style>
-
-<div id="cfbrt-widget">
-
+</head>
+<body data-theme="dark">
 <div class="wrap">
 
-  <section style="margin-top:32px;">
-    <div class="section-head">
-      <h2>All Broadcasts</h2>
-      <button class="theme-switch" id="themeToggle" type="button" aria-label="Toggle dark mode">
-        <span class="theme-switch-track">
-          <span class="theme-switch-thumb" id="themeThumb"><span id="themeIcon">☾</span></span>
-        </span>
-      </button>
+  <header class="page-head">
+    <div class="title-block">
+      <p class="eyebrow">Full 2025 Season</p>
+      <h1>On3 College Football<br>TV Ratings Tracker</h1>
     </div>
-    <select class="period-select" id="periodSelect"></select>
-    <div class="filters">
-      <select id="fNetwork"></select>
-      <input id="fSearch" type="text" placeholder="Search team or game…">
-      <button class="reset-btn" id="fReset">Reset</button>
+    <button class="theme-toggle" id="themeToggle" aria-pressed="true">
+      <span id="themeIcon">&#9789;</span> <span id="themeLabel">Dark</span>
+    </button>
+  </header>
+
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by team...">
     </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th data-col="viewers">Viewers (M)</th>
-            <th data-col="game">Game</th>
-            <th data-col="dateTime">Date / Time</th>
-            <th data-col="network">Network</th>
-            <th data-col="phase">Phase</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </section>
+    <select id="weekFilter" aria-label="Filter by week">
+      <option value="all">All Weeks</option>
+    </select>
+    <select id="networkFilter" aria-label="Filter by network">
+      <option value="all">All Networks</option>
+    </select>
+    <select id="phaseFilter" aria-label="Filter by phase">
+      <option value="all">All Phases</option>
+    </select>
+  </div>
 
-  <footer>Source: team-compiled Google Sheet (Nielsen, ESPN PR, FOX Sports PR, NBC Sports PR, CBS Sports, sportsmediawatch.com, and other press releases). Some early/late-week figures are same-day estimates.</footer>
-</div>
+  <div class="meta-row"><span id="resultCount"></span></div>
 
+  <table>
+    <thead>
+      <tr>
+        <th data-sort="viewers" data-type="num">Viewers (in millions) <span class="arrow">&#9660;</span></th>
+        <th data-sort="game" data-type="str">Game <span class="arrow">&#9660;</span></th>
+        <th data-sort="datetime" data-type="str">Date / Time <span class="arrow">&#9660;</span></th>
+        <th data-sort="network" data-type="str">Network <span class="arrow">&#9660;</span></th>
+        <th data-sort="week" data-type="str">Week <span class="arrow">&#9660;</span></th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
+  <div class="card-list" id="cardList"></div>
+
+  <div class="empty-state" id="emptyState">No games match your filters.</div>
+
+  <footer class="page-foot">Source: Nielsen Big Data + Panel</footer>
 </div>
 
 <script>
-(function(){
-'use strict';
+const DATA = [{"viewers":16.6,"game":"Texas at Ohio State","datetime":"Sat Aug. 30, Noon ET","network":"FOX","week":"Week 1","phase":"Regular Season"},{"viewers":10.8,"game":"Notre Dame at Miami","datetime":"Sun, Aug. 31, 7:30pm ET","network":"ABC","week":"Week 1","phase":"Regular Season"},{"viewers":10.7,"game":"Alabama at Florida State","datetime":"Sat Aug. 30, 3:30pm ET","network":"ABC","week":"Week 1","phase":"Regular Season"},{"viewers":10.4,"game":"LSU at Clemson","datetime":"Sat, Aug. 30, 8pm ET","network":"ABC","week":"Week 1","phase":"Regular Season"},{"viewers":6.1,"game":"TCU at North Carolina","datetime":"Mon, Sept. 1, 8pm ET","network":"ESPN","week":"Week 1","phase":"Regular Season"},{"viewers":5.4,"game":"Virginia Tech at South Carolina","datetime":"Sun Aug. 31, 4:30pm ET","network":"ESPN","week":"Week 1","phase":"Regular Season"},{"viewers":3.7,"game":"Georgia Tech at Colorado","datetime":"Fri, Aug. 30, 9pm ET","network":"ESPN","week":"Week 1","phase":"Regular Season"},{"viewers":3.3,"game":"Nebraska vs. Cincinnati","datetime":"Thurs Aug. 29, 8pm ET","network":"ESPN","week":"Week 1","phase":"Regular Season"},{"viewers":2.83,"game":"Auburn at Baylor","datetime":"Fri, Aug. 30, 9pm ET","network":"FOX","week":"Week 1","phase":"Regular Season"},{"viewers":2.6,"game":"Syracuse vs. Tennessee","datetime":"Sat, Aug. 30, Noon ET","network":"ABC","week":"Week 1","phase":"Regular Season"},{"viewers":2.06,"game":"New Mexico at Michigan","datetime":"Sat, Aug. 30, 8pm ET","network":"NBC","week":"Week 1","phase":"Regular Season"},{"viewers":1.02,"game":"UTSA at Texas A&M","datetime":"Sat, Aug. 30, 7pm ET","network":"ESPN","week":"Week 1","phase":"Regular Season"},{"viewers":0.235,"game":"Missouri State at USC","datetime":"Sat, Aug. 30, 7:30pm ET","network":"BTN","week":"Week 1","phase":"Regular Season"},{"viewers":9.7,"game":"Michigan at Oklahoma","datetime":"9/6, 7:30pm ET","network":"ABC","week":"Week 2","phase":"Regular Season"},{"viewers":4.8,"game":"Ole Miss at Kentucky","datetime":"9/6, 3:30pm ET","network":"ABC","week":"Week 2","phase":"Regular Season"},{"viewers":4.278,"game":"Iowa at Iowa State","datetime":"9/6, 12pm ET","network":"FOX","week":"Week 2","phase":"Regular Season"},{"viewers":3.7,"game":"San Jose State at Texas","datetime":"9/6, 12pm ET","network":"ABC","week":"Week 2","phase":"Regular Season"},{"viewers":2.685,"game":"Delaware at Colorado","datetime":"9/6, 3:30pm ET","network":"FOX","week":"Week 2","phase":"Regular Season"},{"viewers":2.32,"game":"Oklahoma State at Oregon","datetime":"9/6, 3:30pm ET","network":"CBS","week":"Week 2","phase":"Regular Season"},{"viewers":2.2,"game":"Illinois at Duke","datetime":"9/6, 12pm ET","network":"ESPN","week":"Week 2","phase":"Regular Season"},{"viewers":1.8,"game":"Kansas at Missouri","datetime":"9/6, 3:30pm ET","network":"ESPN2","week":"Week 2","phase":"Regular Season"},{"viewers":1.8,"game":"Grambling at Ohio State","datetime":"9/6, 3:30pm ET","network":"BTN","week":"Week 2","phase":"Regular Season"},{"viewers":1.6,"game":"Boston College at Michigan State","datetime":"9/6, 7:30pm ET","network":"NBC","week":"Week 2","phase":"Regular Season"},{"viewers":1.003,"game":"Baylor at SMU","datetime":"9/6, 12pm ET","network":"The CW","week":"Week 2","phase":"Regular Season"},{"viewers":0.818,"game":"James Madison at Louisville","datetime":"9/5, 7pm ET","network":"ESPN","week":"Week 2","phase":"Regular Season"},{"viewers":0.565,"game":"Fresno State at Oregon State","datetime":"9/6, 3:30pm ET","network":"The CW","week":"Week 2","phase":"Regular Season"},{"viewers":0.54,"game":"San Diego State at Washington State","datetime":"9/6, 10:15pm ET","network":"The CW","week":"Week 2","phase":"Regular Season"},{"viewers":0.179,"game":"NIU at Maryland","datetime":"9/6, 7:30pm ET","network":"BTN","week":"Week 2","phase":"Regular Season"},{"viewers":12.6,"game":"Georgia at Tennessee","datetime":"Sept. 13, 3:30pm ET","network":"ABC","week":"Week 3","phase":"Regular Season"},{"viewers":7.6,"game":"Florida at LSU","datetime":"Sept. 13, 7:30pm ET","network":"ABC","week":"Week 3","phase":"Regular Season"},{"viewers":6.2,"game":"Texas A&M at Notre Dame","datetime":"Sept. 13, 7:30pm ET","network":"NBC","week":"Week 3","phase":"Regular Season"},{"viewers":4.8,"game":"Clemson at Georgia Tech","datetime":"Sept. 13, Noon ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":4.5,"game":"Wisconsin at Alabama","datetime":"Sept. 13, Noon ET","network":"ABC","week":"Week 3","phase":"Regular Season"},{"viewers":2.9,"game":"Colorado at Houston","datetime":"Sept. 12, 7:30pm ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":2.277,"game":"Oregon at Northwestern","datetime":"Sept. 13, Noon ET","network":"FOX","week":"Week 3","phase":"Regular Season"},{"viewers":1.867,"game":"Kansas State at Arizona","datetime":"Sept. 12, 9pm ET","network":"FOX","week":"Week 3","phase":"Regular Season"},{"viewers":1.708,"game":"Pitt at West Virginia","datetime":"Sept. 13, 3:30pm ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":1.432,"game":"Arkansas at Ole Miss","datetime":"Sept. 13, 7:30pm ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":1.271,"game":"USC at Purdue (delayed)","datetime":"Sept. 13, 8pm ET","network":"CBS","week":"Week 3","phase":"Regular Season"},{"viewers":1.047,"game":"NC State at Wake Forest","datetime":"Sept. 11, 7:30pm ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":0.904,"game":"Minnesota at Cal","datetime":"Sept. 13, 10:30pm ET","network":"ESPN","week":"Week 3","phase":"Regular Season"},{"viewers":0.859,"game":"Oregon State at Texas Tech","datetime":"Sept. 13, 8pm ET","network":"FOX","week":"Week 3","phase":"Regular Season"},{"viewers":0.72,"game":"USF at Miami (delayed)","datetime":"Sept. 13, 3:30pm ET","network":"The CW","week":"Week 3","phase":"Regular Season"},{"viewers":0.71,"game":"UMass at Iowa","datetime":"Sept. 13, 7:30pm ET","network":"BTN","week":"Week 3","phase":"Regular Season"},{"viewers":0.3,"game":"Indiana State at Indiana","datetime":"Sept. 12, 6:30pm ET","network":"BTN","week":"Week 3","phase":"Regular Season"},{"viewers":6.5,"game":"Florida at Miami","datetime":"Sept. 20, 7:30pm ET","network":"ABC","week":"Week 4","phase":"Regular Season"},{"viewers":6.1,"game":"Auburn at Oklahoma","datetime":"Sept. 20, 3:30pm ET","network":"ABC","week":"Week 4","phase":"Regular Season"},{"viewers":5.3,"game":"Michigan at Nebraska","datetime":"Sept. 20, 3:30pm ET","network":"CBS","week":"Week 4","phase":"Regular Season"},{"viewers":4.04,"game":"Texas Tech at Utah","datetime":"Sept. 20, Noon ET","network":"FOX","week":"Week 4","phase":"Regular Season"},{"viewers":3.4,"game":"Syracuse at Clemson*","datetime":"Sept. 20, Noon ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":3.01,"game":"Iowa at Rutgers","datetime":"Sept. 19, 8pm ET","network":"FOX","week":"Week 4","phase":"Regular Season"},{"viewers":2.5,"game":"Illinois at Indiana","datetime":"Sept. 20, 7:30pm ET","network":"NBC","week":"Week 4","phase":"Regular Season"},{"viewers":2.11,"game":"Arkansas at Memphis","datetime":"Sept. 20, Noon ET","network":"ABC","week":"Week 4","phase":"Regular Season"},{"viewers":2.1,"game":"Michigan State at USC","datetime":"Sept. 20, 11pm ET","network":"FOX","week":"Week 4","phase":"Regular Season"},{"viewers":2.03,"game":"North Carolina at UCF","datetime":"Sept. 20, 3:30pm ET","network":"FOX","week":"Week 4","phase":"Regular Season"},{"viewers":1.85,"game":"South Carolina at Missouri","datetime":"Sept. 20, 7pm ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":1.65,"game":"Washington at Washington State","datetime":"Sept. 20, 7:30pm ET","network":"CBS","week":"Week 4","phase":"Regular Season"},{"viewers":1.6,"game":"Arizona State at Baylor","datetime":"Sept. 20, 7:30pm ET","network":"FOX","week":"Week 4","phase":"Regular Season"},{"viewers":1.57,"game":"Tulsa at Oklahoma State","datetime":"Sept. 19, 7:30pm ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":1.34,"game":"Wyoming at Colorado","datetime":"Sept. 20, 10:30pm ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":1.05,"game":"Tulane at Ole Miss","datetime":"Sept. 20, 3:30pm ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":0.671,"game":"Rice at Charlotte","datetime":"Sept. 18, 7:30pm ET","network":"ESPN","week":"Week 4","phase":"Regular Season"},{"viewers":0.663,"game":"NC State at Duke","datetime":"Sept. 20, 5:30pm ET","network":"ESPN2","week":"Week 4","phase":"Regular Season"},{"viewers":0.662,"game":"SMU at TCU","datetime":"Sept. 20, Noon ET","network":"ESPN2","week":"Week 4","phase":"Regular Season"},{"viewers":0.623,"game":"BYU at ECU","datetime":"Sept. 20, 7:30pm ET","network":"ESPN2","week":"Week 4","phase":"Regular Season"},{"viewers":0.074,"game":"UNLV at Miami (OH)","datetime":"Sept. 20, Noon ET","network":"ESPNU","week":"Week 4","phase":"Regular Season"},{"viewers":0.067,"game":"JMU at Liberty","datetime":"Sept. 20, 3:30pm ET","network":"ESPNU","week":"Week 4","phase":"Regular Season"},{"viewers":0.052,"game":"Georgia State at Vanderbilt","datetime":"Sept. 20, 7:45pm ET","network":"ESPNU","week":"Week 4","phase":"Regular Season"},{"viewers":10.42,"game":"Alabama at Georgia","datetime":"Sept. 27, 7:30pm ET","network":"ABC","week":"Week 5","phase":"Regular Season"},{"viewers":7.739,"game":"Oregon at Penn State*","datetime":"Sept. 27, 7:30pm ET","network":"NBC","week":"Week 5","phase":"Regular Season"},{"viewers":6.7,"game":"LSU at Ole Miss","datetime":"Sept. 27, 3:30pm ET","network":"ABC","week":"Week 5","phase":"Regular Season"},{"viewers":5.229,"game":"Ohio State at Washington","datetime":"Sept. 27, 3:30pm ET","network":"CBS","week":"Week 5","phase":"Regular Season"},{"viewers":4.4,"game":"Florida State at Virginia","datetime":"Sept. 26, 7pm ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":4.3,"game":"Notre Dame at Arkansas","datetime":"Sept. 27, Noon ET","network":"ABC","week":"Week 5","phase":"Regular Season"},{"viewers":4.116,"game":"USC at Illinois","datetime":"Sept. 27, Noon ET","network":"FOX","week":"Week 5","phase":"Regular Season"},{"viewers":2.473,"game":"Auburn at Texas A&M","datetime":"Sept. 27, 4 p.m. ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":2.458,"game":"BYU at Colorado","datetime":"Sept. 27, 10:15pm ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":1.853,"game":"Georgia Tech at Wake Forest","datetime":"Sept. 27, Noon ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":1.55,"game":"Houston at Oregon State","datetime":"Sept. 26, 10:30pm ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":1.15,"game":"Arizona at Iowa State","datetime":"Sept. 27, 7pm ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":0.891,"game":"Army at East Carolina","datetime":"Sept. 25, 7:30pm ET","network":"ESPN","week":"Week 5","phase":"Regular Season"},{"viewers":0.58,"game":"Louisville at Pitt","datetime":"Sept. 27, Noon ET","network":"ESPN2","week":"Week 5","phase":"Regular Season"},{"viewers":0.396,"game":"Baylor at Oklahoma State","datetime":"Sept. 27, 3:30pm ET","network":"ESPN2","week":"Week 5","phase":"Regular Season"},{"viewers":0.151,"game":"Memphis at FAU","datetime":"Sept. 27, 7pm ET","network":"ESPN2","week":"Week 5","phase":"Regular Season"},{"viewers":0.102,"game":"UMass at Mizzou","datetime":"Sept. 27, 7:30pm ET","network":"ESPNU","week":"Week 5","phase":"Regular Season"},{"viewers":0.05,"game":"South Alabama at North Texas","datetime":"Sept. 27, Noon ET","network":"ESPNU","week":"Week 5","phase":"Regular Season"},{"viewers":0.031,"game":"Tulane at Tulsa","datetime":"Sept. 27, 4pm ET","network":"ESPNU","week":"Week 5","phase":"Regular Season"},{"viewers":6.4,"game":"Vanderbilt at Alabama","datetime":"Oct. 4, 3:30pm ET","network":"ABC","week":"Week 6","phase":"Regular Season"},{"viewers":6.0,"game":"Miami at Florida State","datetime":"Oct. 4, 7:30pm ET","network":"ABC","week":"Week 6","phase":"Regular Season"},{"viewers":4.627,"game":"Wisconsin at Michigan","datetime":"Oct. 4, 12pm ET","network":"FOX","week":"Week 6","phase":"Regular Season"},{"viewers":4.0,"game":"Texas at Florida","datetime":"Oct. 4, 3:30pm ET","network":"ESPN","week":"Week 6","phase":"Regular Season"},{"viewers":3.698,"game":"Minnesota at Ohio State","datetime":"Oct. 4, 7:30pm ET","network":"NBC","week":"Week 6","phase":"Regular Season"},{"viewers":3.68,"game":"Kentucky at Georgia","datetime":"Oct. 4, 12pm ET","network":"ABC","week":"Week 6","phase":"Regular Season"},{"viewers":2.137,"game":"Colorado at TCU","datetime":"Oct. 4, 7:30pm ET","network":"FOX","week":"Week 6","phase":"Regular Season"},{"viewers":1.87,"game":"Clemson at North Carolina","datetime":"Oct. 4, Noon ET","network":"ESPN","week":"Week 6","phase":"Regular Season"},{"viewers":1.5,"game":"Michigan State at Nebraska","datetime":"Oct. 4, 4pm ET","network":"FS1","week":"Week 6","phase":"Regular Season"},{"viewers":1.451,"game":"Texas Tech at Houston","datetime":"Oct. 4, 7pm ET","network":"ESPN","week":"Week 6","phase":"Regular Season"},{"viewers":1.41,"game":"West Virginia at BYU","datetime":"Oct. 3, 10:30pm ET","network":"ESPN","week":"Week 6","phase":"Regular Season"},{"viewers":1.11,"game":"Iowa State at Cincinnati","datetime":"Oct. 4, 12pm ET","network":"ESPN2","week":"Week 6","phase":"Regular Season"},{"viewers":1.0,"game":"Duke at Cal","datetime":"Oct. 4, 10:30pm ET","network":"ESPN","week":"Week 6","phase":"Regular Season"},{"viewers":0.749,"game":"Charlotte at USF","datetime":"Oct. 3, 7pm ET","network":"ESPN2","week":"Week 6","phase":"Regular Season"},{"viewers":0.603,"game":"Virginia at Louisville","datetime":"Oct. 4, 1pm ET","network":"The CW","week":"Week 6","phase":"Regular Season"},{"viewers":0.049,"game":"Army at UAB","datetime":"Oct. 4, 12pm ET","network":"ESPNU","week":"Week 6","phase":"Regular Season"},{"viewers":0.041,"game":"Tulsa at Memphis","datetime":"Oct. 4, 8pm ET","network":"ESPNU","week":"Week 6","phase":"Regular Season"},{"viewers":0.022,"game":"Texas State at Arkansas State","datetime":"Oct. 4, 4pm ET","network":"ESPNU","week":"Week 6","phase":"Regular Season"},{"viewers":8.732,"game":"Oklahoma vs. Texas","datetime":"Oct. 11, 3:30pm ET","network":"ABC","week":"Week 7","phase":"Regular Season"},{"viewers":6.993,"game":"Alabama at Missouri","datetime":"Oct. 11, Noon ET","network":"ABC","week":"Week 7","phase":"Regular Season"},{"viewers":6.689,"game":"Georgia at Auburn","datetime":"Oct. 11, 7:30pm ET","network":"ABC","week":"Week 7","phase":"Regular Season"},{"viewers":5.871,"game":"Ohio State at Illinois","datetime":"Oct. 11, Noon ET","network":"FOX","week":"Week 7","phase":"Regular Season"},{"viewers":5.59,"game":"Indiana at Oregon","datetime":"Oct. 11, 3:30pm ET","network":"CBS","week":"Week 7","phase":"Regular Season"},{"viewers":4.3,"game":"Michigan at USC","datetime":"Oct. 11, 7:30pm ET","network":"NBC","week":"Week 7","phase":"Regular Season"},{"viewers":2.618,"game":"Florida at Texas A&M","datetime":"Oct. 11, 7pm ET","network":"ESPN","week":"Week 7","phase":"Regular Season"},{"viewers":2.052,"game":"Pitt at Florida State","datetime":"Oct. 11, Noon ET","network":"ESPN","week":"Week 7","phase":"Regular Season"},{"viewers":1.436,"game":"Iowa State at Colorado","datetime":"Oct. 11, 3:30pm ET","network":"ESPN","week":"Week 7","phase":"Regular Season"},{"viewers":1.27,"game":"Arizona State at Utah","datetime":"Oct. 11, 10:30pm ET","network":"ESPN","week":"Week 7","phase":"Regular Season"},{"viewers":1.103,"game":"USF at North Texas","datetime":"Oct. 10, 7:30pm ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.868,"game":"BYU at Arizona","datetime":"Oct. 11, 8pm ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.576,"game":"ECU at Tulane","datetime":"Oct. 9, 7:30pm ET","network":"ESPN","week":"Week 7","phase":"Regular Season"},{"viewers":0.338,"game":"Middle Tennessee at Missouri State","datetime":"Oct. 8, 7:30pm ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.215,"game":"Navy at Temple","datetime":"Oct. 11, 4pm ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.207,"game":"Louisiana at James Madison","datetime":"Oct. 11, Noon ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.145,"game":"Georgia Southern at Southern Miss","datetime":"Oct. 9, 8pm ET","network":"ESPN2","week":"Week 7","phase":"Regular Season"},{"viewers":0.053,"game":"Louisiana Tech at Kennesaw State","datetime":"Oct. 9, 7pm ET","network":"ESPNU","week":"Week 7","phase":"Regular Season"},{"viewers":0.027,"game":"Toledo at Bowling Green","datetime":"Oct. 11, Noon ET","network":"ESPNU","week":"Week 7","phase":"Regular Season"},{"viewers":0.02,"game":"Rice at UTSA","datetime":"Oct. 11, 7:30pm ET","network":"ESPNU","week":"Week 7","phase":"Regular Season"},{"viewers":9.787,"game":"Ole Miss at Georgia","datetime":"Oct. 18, 3:30pm ET","network":"ABC","week":"Week 8","phase":"Regular Season"},{"viewers":8.011,"game":"Tennessee at Alabama","datetime":"Oct. 18, 7:30pm ET","network":"ABC","week":"Week 8","phase":"Regular Season"},{"viewers":5.935,"game":"LSU at Vanderbilt","datetime":"Oct. 18, Noon ET","network":"ABC","week":"Week 8","phase":"Regular Season"},{"viewers":4.6,"game":"USC at Notre Dame","datetime":"Oct. 18, 7:30pm ET","network":"NBC","week":"Week 8","phase":"Regular Season"},{"viewers":4.321,"game":"Washington at Michigan","datetime":"Oct. 18, Noon ET","network":"FOX","week":"Week 8","phase":"Regular Season"},{"viewers":4.0,"game":"Ohio State at Wisconsin","datetime":"Oct. 18, 3:30pm ET","network":"CBS","week":"Week 8","phase":"Regular Season"},{"viewers":3.41,"game":"Louisville at Miami","datetime":"Oct. 17, 7pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":2.661,"game":"Nebraska at Minnesota","datetime":"Oct. 17, 8pm ET","network":"FOX","week":"Week 8","phase":"Regular Season"},{"viewers":2.639,"game":"Texas at Kentucky","datetime":"Oct. 18, 7pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":2.558,"game":"Texas Tech at Arizona State","datetime":"Oct. 18, 4pm ET","network":"FOX","week":"Week 8","phase":"Regular Season"},{"viewers":2.0,"game":"Utah at BYU","datetime":"Oct. 18, 7:30pm ET","network":"FOX","week":"Week 8","phase":"Regular Season"},{"viewers":1.714,"game":"Duke at Georgia Tech","datetime":"Oct. 18, Noon ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":1.581,"game":"North Carolina at Cal","datetime":"Oct. 17, 10:30pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":1.569,"game":"Arkansas at Texas A&M","datetime":"Oct. 18, 5pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":1.415,"game":"Florida State at Stanford","datetime":"Oct. 18, 10:30pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":0.579,"game":"Delaware at Jacksonville State","datetime":"Oct. 15, 7pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":0.526,"game":"Tulsa at East Carolina","datetime":"Oct. 16, 7:30pm ET","network":"ESPN","week":"Week 8","phase":"Regular Season"},{"viewers":0.423,"game":"Baylor at TCU","datetime":"Oct. 18, Noon ET","network":"ESPN2","week":"Week 8","phase":"Regular Season"},{"viewers":0.316,"game":"Cincinnati at Oklahoma State","datetime":"Oct. 18, 8pm ET","network":"ESPN2","week":"Week 8","phase":"Regular Season"},{"viewers":0.306,"game":"Arkansas State at South Alabama","datetime":"Oct. 14, 7:30pm ET","network":"ESPN2","week":"Week 8","phase":"Regular Season"},{"viewers":0.246,"game":"Memphis at UAB","datetime":"Oct. 18, 4pm ET","network":"ESPN2","week":"Week 8","phase":"Regular Season"},{"viewers":0.07,"game":"Army at Tulane","datetime":"Oct. 18, Noon ET","network":"ESPNU","week":"Week 8","phase":"Regular Season"},{"viewers":0.047,"game":"FIU at Western Kentucky","datetime":"Oct. 14, 8pm ET","network":"ESPNU","week":"Week 8","phase":"Regular Season"},{"viewers":0.038,"game":"Florida Atlantic at USF","datetime":"Oct. 18, 7:30pm ET","network":"ESPNU","week":"Week 8","phase":"Regular Season"},{"viewers":0.037,"game":"Old Dominion at James Madison","datetime":"Oct. 18, 3:30pm ET","network":"ESPNU","week":"Week 8","phase":"Regular Season"},{"viewers":7.842,"game":"Alabama at South Carolina","datetime":"Oct. 25, 3:30 p.m. ET","network":"ABC","week":"Week 9","phase":"Regular Season"},{"viewers":6.7598,"game":"Texas A&M at LSU","datetime":"Oct. 25, 7:30 p.m. ET","network":"ABC","week":"Week 9","phase":"Regular Season"},{"viewers":6.554,"game":"Ole Miss at Oklahoma","datetime":"Oct. 25, Noon ET","network":"ABC","week":"Week 9","phase":"Regular Season"},{"viewers":3.634,"game":"Michigan at Michigan State","datetime":"Oct. 25, 7:30 p.m. ET","network":"NBC","week":"Week 9","phase":"Regular Season"},{"viewers":3.072,"game":"Missouri at Vanderbilt","datetime":"Oct. 25, 3:30 p.m. ET","network":"ESPN","week":"Week 9","phase":"Regular Season"},{"viewers":3.023,"game":"UCLA at Indiana","datetime":"Oct. 25, Noon ET","network":"FOX","week":"Week 9","phase":"Regular Season"},{"viewers":2.659,"game":"BYU at Iowa State","datetime":"Oct. 25, 3:30 p.m. ET","network":"FOX","week":"Week 9","phase":"Regular Season"},{"viewers":1.598,"game":"Minnesota at Iowa","datetime":"Oct. 25, 3:30 p.m. ET","network":"CBS","week":"Week 9","phase":"Regular Season"},{"viewers":1.291,"game":"Utah at Colorado","datetime":"Oct. 25, 10 p.m. ET","network":"ESPN","week":"Week 9","phase":"Regular Season"},{"viewers":1.271,"game":"Syracuse at Georgia Tech","datetime":"Oct. 25, Noon ET","network":"ESPN","week":"Week 9","phase":"Regular Season"},{"viewers":1.212,"game":"Stanford at Miami","datetime":"Oct. 25, 7 p.m. ET","network":"ESPN","week":"Week 9","phase":"Regular Season"},{"viewers":1.166,"game":"Wisconsin at Oregon","datetime":"Oct. 25, 7 p.m. ET","network":"FS1","week":"Week 9","phase":"Regular Season"},{"viewers":1.106,"game":"Virginia Tech at Cal","datetime":"Oct. 24, 7:30 p.m. ET","network":"ESPN","week":"Week 9","phase":"Regular Season"},{"viewers":0.835,"game":"Northwestern at Nebraska","datetime":"Oct. 25, Noon ET","network":"FS1","week":"Week 9","phase":"Regular Season"},{"viewers":0.773,"game":"Illinois at Washington","datetime":"Oct. 25, 3:30 p.m. ET","network":"BTN","week":"Week 9","phase":"Regular Season"},{"viewers":0.467,"game":"Kansas State at Kansas","datetime":"Oct. 25, Noon ET","network":"TNT","week":"Week 9","phase":"Regular Season"},{"viewers":0.453,"game":"Baylor at Cincinnati","datetime":"Oct. 25, 4 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.417,"game":"Middle Tennessee at Delaware","datetime":"Oct. 22, 7:30 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.402,"game":"Houston at Arizona State","datetime":"Oct. 25, 8 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.3998,"game":"South Alabama at Georgia State","datetime":"Oct. 23, 7:30 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.317,"game":"North Texas at Charlotte","datetime":"Oct. 24, 7 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.311,"game":"Toledo at Washington State","datetime":"Oct. 25, 3:30 p.m. ET","network":"The CW","week":"Week 9","phase":"Regular Season"},{"viewers":0.285,"game":"SMU at Wake Forest","datetime":"Oct. 25, Noon ET","network":"The CW","week":"Week 9","phase":"Regular Season"},{"viewers":0.282,"game":"Kennesaw State at FIU","datetime":"Oct. 21, 7 p.m. ET","network":"ESPN2","week":"Week 9","phase":"Regular Season"},{"viewers":0.265,"game":"San Diego State at Fresno State","datetime":"Oct. 25, 3:30 p.m. ET","network":"FS1","week":"Week 9","phase":"Regular Season"},{"viewers":0.212,"game":"Rutgers at Purdue","datetime":"Oct. 25, Noon ET","network":"BTN","week":"Week 9","phase":"Regular Season"},{"viewers":0.1095,"game":"Oklahoma State at Texas Tech","datetime":"Oct. 25, 4:30 p.m. ET","network":"ESPNU","week":"Week 9","phase":"Regular Season"},{"viewers":0.033,"game":"Appalachian State at Old Dominion","datetime":"Oct. 25, Noon ET","network":"ESPNU","week":"Week 9","phase":"Regular Season"},{"viewers":7.8,"game":"Florida vs. Georgia","datetime":"Nov. 1, 3:30 p.m. ET","network":"ABC","week":"Week 10","phase":"Regular Season"},{"viewers":7.187,"game":"Penn State at Ohio State","datetime":"Nov. 1, 12 p.m. ET","network":"FOX","week":"Week 10","phase":"Regular Season"},{"viewers":4.8,"game":"Oklahoma at Tennessee","datetime":"Nov. 1, 7:30 p.m. ET","network":"ABC","week":"Week 10","phase":"Regular Season"},{"viewers":4.5,"game":"Vanderbilt at Texas","datetime":"Nov. 1, 12 p.m. ET","network":"ABC","week":"Week 10","phase":"Regular Season"},{"viewers":3.131,"game":"Texas Tech at Kansas State","datetime":"Nov. 1, 3:30 p.m. ET","network":"FOX","week":"Week 10","phase":"Regular Season"},{"viewers":2.894,"game":"Indiana at Maryland","datetime":"Nov. 1, 3:30 p.m. ET","network":"CBS","week":"Week 10","phase":"Regular Season"},{"viewers":2.077,"game":"USC at Nebraska","datetime":"Nov. 1, 7:30 p.m. ET","network":"NBC","week":"Week 10","phase":"Regular Season"},{"viewers":1.726,"game":"Notre Dame at Boston College","datetime":"Nov. 1, 3:30 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":1.606,"game":"Purdue at Michigan","datetime":"Nov. 1, 7 p.m. ET","network":"BTN","week":"Week 10","phase":"Regular Season"},{"viewers":1.496,"game":"Miami at SMU","datetime":"Nov. 1, 12 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":1.32,"game":"South Carolina at Ole Miss","datetime":"Nov. 1, 7 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":1.031,"game":"Army at Air Force","datetime":"Nov. 1, 12 p.m. ET","network":"CBS","week":"Week 10","phase":"Regular Season"},{"viewers":1.02,"game":"Michigan State at Minnesota","datetime":"Nov. 1, 3:30 p.m. ET","network":"BTN","week":"Week 10","phase":"Regular Season"},{"viewers":0.991,"game":"Rutgers at Illinois","datetime":"Nov. 1, 12 p.m. ET","network":"NBC","week":"Week 10","phase":"Regular Season"},{"viewers":0.983,"game":"North Carolina at Syracuse","datetime":"Oct. 31, 7:30 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":0.823,"game":"Washington State at Oregon State","datetime":"Nov. 1, 7:30 p.m. ET","network":"CBS","week":"Week 10","phase":"Regular Season"},{"viewers":0.819,"game":"Cincinnati at Utah","datetime":"Nov. 1, 10:30 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":0.659,"game":"Tulane at UTSA","datetime":"Oct. 30, 7:30 p.m. ET","network":"ESPN","week":"Week 10","phase":"Regular Season"},{"viewers":0.615,"game":"Arizona State at Iowa State","datetime":"Nov. 1, 12:45 p.m. ET","network":"TNT","week":"Week 10","phase":"Regular Season"},{"viewers":0.604,"game":"Georgia Tech at NC State","datetime":"Nov. 1, 7:30 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.593,"game":"Louisville at Virginia Tech","datetime":"Nov. 1, 3 p.m. ET","network":"The CW","week":"Week 10","phase":"Regular Season"},{"viewers":0.485,"game":"West Virginia at Houston","datetime":"Nov. 1, 12 p.m. ET","network":"FS1","week":"Week 10","phase":"Regular Season"},{"viewers":0.379,"game":"Fresno State at Boise State","datetime":"Nov. 1, 3:30 p.m. ET","network":"FS1","week":"Week 10","phase":"Regular Season"},{"viewers":0.374,"game":"Arizona at Colorado","datetime":"Nov. 1, 7 p.m. ET","network":"FS1","week":"Week 10","phase":"Regular Season"},{"viewers":0.327,"game":"Virginia at Cal","datetime":"Nov. 1, 3:30 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.303,"game":"Jacksonville State at MTSU","datetime":"Oct. 29, 7:30 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.288,"game":"Marshall at Coastal Carolina","datetime":"Oct. 30, 7:30 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.245,"game":"James Madison at Texas State","datetime":"Oct. 28, 8 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.244,"game":"Memphis at Rice","datetime":"Oct. 31, 7 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.216,"game":"Navy at North Texas","datetime":"Nov. 1, 12 p.m. ET","network":"ESPN2","week":"Week 10","phase":"Regular Season"},{"viewers":0.058,"game":"UCF at Baylor","datetime":"Nov. 1, 12 p.m. ET","network":"ESPNU","week":"Week 10","phase":"Regular Season"},{"viewers":0.05,"game":"UTEP at Kennesaw State","datetime":"Oct. 28, 8 p.m. ET","network":"ESPNU","week":"Week 10","phase":"Regular Season"},{"viewers":0.032,"game":"Central Michigan at Western Michigan","datetime":"Nov. 1, 4 p.m. ET","network":"ESPNU","week":"Week 10","phase":"Regular Season"},{"viewers":0.009,"game":"Arkansas State at Troy","datetime":"Nov. 1, 8 p.m. ET","network":"ESPNU","week":"Week 10","phase":"Regular Season"},{"viewers":7.541,"game":"LSU at Alabama","datetime":"Nov. 8, 7:30 p.m. ET","network":"ABC","week":"Week 11","phase":"Regular Season"},{"viewers":6.025,"game":"Indiana at Penn State","datetime":"Nov. 8, Noon ET","network":"FOX","week":"Week 11","phase":"Regular Season"},{"viewers":5.37,"game":"Oregon at Iowa","datetime":"Nov. 8, 3:30 p.m. ET","network":"CBS","week":"Week 11","phase":"Regular Season"},{"viewers":4.871,"game":"Texas A&M at Missouri","datetime":"Nov. 8, 3:30 p.m. ET","network":"ABC","week":"Week 11","phase":"Regular Season"},{"viewers":3.976,"game":"BYU at Texas Tech","datetime":"Nov. 8, Noon ET","network":"ABC","week":"Week 11","phase":"Regular Season"},{"viewers":3.192,"game":"Navy at Notre Dame","datetime":"Nov. 8, 7:30 p.m. ET","network":"NBC","week":"Week 11","phase":"Regular Season"},{"viewers":2.419,"game":"Iowa State at TCU","datetime":"Nov. 8, 3:30 p.m. ET","network":"FOX","week":"Week 11","phase":"Regular Season"},{"viewers":2.324,"game":"Georgia at Mississippi State","datetime":"Nov. 8, Noon ET","network":"ESPN","week":"Week 11","phase":"Regular Season"},{"viewers":2.248,"game":"Nebraska at UCLA","datetime":"Nov. 8, 9 p.m. ET","network":"FOX","week":"Week 11","phase":"Regular Season"},{"viewers":1.912,"game":"Northwestern at USC","datetime":"Nov. 7, 9 p.m. ET","network":"FOX","week":"Week 11","phase":"Regular Season"},{"viewers":1.847,"game":"Ohio State at Purdue","datetime":"Nov. 8, 1 p.m. ET","network":"BTN","week":"Week 11","phase":"Regular Season"},{"viewers":1.198,"game":"Syracuse at Miami","datetime":"Nov. 8, 3:30 p.m. ET","network":"ESPN","week":"Week 11","phase":"Regular Season"},{"viewers":1.088,"game":"Washington at Wisconsin","datetime":"Nov. 8, 4:30 p.m. ET","network":"BTN","week":"Week 11","phase":"Regular Season"},{"viewers":0.792,"game":"Tulane at Memphis","datetime":"Nov. 7, 9 p.m. ET","network":"ESPN","week":"Week 11","phase":"Regular Season"},{"viewers":0.734,"game":"Wake Forest at Virginia","datetime":"Nov. 8, 7 p.m. ET","network":"ESPN","week":"Week 11","phase":"Regular Season"},{"viewers":0.652,"game":"Houston at UCF","datetime":"Nov. 7, 8:30 p.m. ET","network":"FS1","week":"Week 11","phase":"Regular Season"},{"viewers":0.598,"game":"Colorado at West Virginia","datetime":"Nov. 8, Noon ET","network":"TNT","week":"Week 11","phase":"Regular Season"},{"viewers":0.586,"game":"UTSA at USF","datetime":"Nov. 6, 7:30 p.m. ET","network":"ESPN","week":"Week 11","phase":"Regular Season"},{"viewers":0.514,"game":"Stanford at North Carolina","datetime":"Nov. 8, 4:30 p.m. ET","network":"The CW","week":"Week 11","phase":"Regular Season"},{"viewers":0.48,"game":"Kansas at Arizona","datetime":"Nov. 8, 3:30 p.m. ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.471,"game":"Miami (OH) at Ohio","datetime":"Nov. 4, 7 p.m. ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.45,"game":"Cal at Louisville","datetime":"Nov. 8, 7 p.m. ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.301,"game":"Northern Illinois at Toledo","datetime":"Nov. 5, 7 p.m. ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.295,"game":"Sam Houston at Oregon State","datetime":"Nov. 8, 10 p.m. ET","network":"The CW","week":"Week 11","phase":"Regular Season"},{"viewers":0.259,"game":"Maryland at Rutgers","datetime":"Nov. 8, 2:30 p.m. ET","network":"FS1","week":"Week 11","phase":"Regular Season"},{"viewers":0.22,"game":"Georgia Southern at App State","datetime":"Nov. 6, 7:30 p.m. ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.203,"game":"Air Force at San Jose State","datetime":"Nov. 8, 6 p.m. ET","network":"FS1","week":"Week 11","phase":"Regular Season"},{"viewers":0.193,"game":"UNLV at Colorado State","datetime":"Nov. 8, 9:30 p.m. ET","network":"FS1","week":"Week 11","phase":"Regular Season"},{"viewers":0.118,"game":"James Madison at Marshall","datetime":"Nov. 8, Noon ET","network":"ESPN2","week":"Week 11","phase":"Regular Season"},{"viewers":0.099,"game":"Kent State at Ball State","datetime":"Nov. 5, 7 p.m. ET","network":"ESPNU","week":"Week 11","phase":"Regular Season"},{"viewers":0.027,"game":"Southern Miss at Arkansas State","datetime":"Nov. 8, Noon ET","network":"ESPNU","week":"Week 11","phase":"Regular Season"},{"viewers":10.48,"game":"Oklahoma at Alabama","datetime":"Nov. 15, 3:30 p.m. ET","network":"ABC","week":"Week 12","phase":"Regular Season"},{"viewers":10.43,"game":"Texas at Georgia","datetime":"Nov. 15, 7:30 p.m. ET","network":"ABC","week":"Week 12","phase":"Regular Season"},{"viewers":4.28,"game":"South Carolina at Texas A&M","datetime":"Nov. 15, Noon ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":3.956,"game":"Notre Dame at Pitt","datetime":"Nov. 15, Noon ET","network":"ABC","week":"Week 12","phase":"Regular Season"},{"viewers":3.764,"game":"Michigan at Northwestern","datetime":"Nov. 15, Noon ET","network":"FOX","week":"Week 12","phase":"Regular Season"},{"viewers":3.376,"game":"UCLA at Ohio State","datetime":"Nov. 15, 7:30 p.m. ET","network":"NBC","week":"Week 12","phase":"Regular Season"},{"viewers":2.564,"game":"Clemson at Louisville","datetime":"Nov. 14, 7:30 p.m. ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":2.501,"game":"Florida at Ole Miss","datetime":"Nov. 15, 7 p.m. ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":2.476,"game":"Penn State at Michigan State","datetime":"Nov. 15, 3:30 p.m. ET","network":"CBS","week":"Week 12","phase":"Regular Season"},{"viewers":2.327,"game":"Minnesota at Oregon","datetime":"Nov. 14, 9 p.m. ET","network":"FOX","week":"Week 12","phase":"Regular Season"},{"viewers":1.563,"game":"TCU at BYU","datetime":"Nov. 15, 10:30 p.m. ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":1.44,"game":"Iowa at USC","datetime":"Nov. 15, 3:30 p.m. ET","network":"BTN","week":"Week 12","phase":"Regular Season"},{"viewers":1.398,"game":"UCF at Texas Tech","datetime":"Nov. 15, 3:30 p.m. ET","network":"FOX","week":"Week 12","phase":"Regular Season"},{"viewers":1.38,"game":"NC State at Miami","datetime":"Nov. 15, 3:30 p.m. ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":1.058,"game":"Wisconsin at Indiana","datetime":"Nov. 15, Noon ET","network":"BTN","week":"Week 12","phase":"Regular Season"},{"viewers":0.509,"game":"Troy at Old Dominion","datetime":"Nov. 13, 7:30 p.m. ET","network":"ESPN","week":"Week 12","phase":"Regular Season"},{"viewers":0.463,"game":"USF at Navy","datetime":"Nov. 15, Noon ET","network":"ESPN2","week":"Week 12","phase":"Regular Season"},{"viewers":0.457,"game":"Purdue at Washington","datetime":"Nov. 15, 7 p.m. ET","network":"FS1","week":"Week 12","phase":"Regular Season"},{"viewers":0.443,"game":"Virginia at Duke","datetime":"Nov. 15, 3:30 p.m. ET","network":"ESPN2","week":"Week 12","phase":"Regular Season"},{"viewers":0.415,"game":"Utah at Baylor","datetime":"Nov. 15, 7 p.m. ET","network":"ESPN2","week":"Week 12","phase":"Regular Season"},{"viewers":0.409,"game":"West Virginia at Arizona State","datetime":"Nov. 15, 1 p.m. ET","network":"TNT","week":"Week 12","phase":"Regular Season"},{"viewers":0.402,"game":"North Carolina at Wake Forest","datetime":"Nov. 15, 4:30 p.m. ET","network":"The CW","week":"Week 12","phase":"Regular Season"},{"viewers":0.388,"game":"Maryland at Illinois","datetime":"Nov. 15, 3:30 p.m. ET","network":"FS1","week":"Week 12","phase":"Regular Season"},{"viewers":0.353,"game":"Arizona at Cincinnati","datetime":"Nov. 15, Noon ET","network":"FS1","week":"Week 12","phase":"Regular Season"},{"viewers":0.349,"game":"Toledo at Miami (OH)","datetime":"Nov. 12, 7 p.m. ET","network":"ESPN2","week":"Week 12","phase":"Regular Season"},{"viewers":0.312,"game":"Ohio at Western Michigan","datetime":"Nov. 11, 8 p.m. ET","network":"ESPN2","week":"Week 12","phase":"Regular Season"},{"viewers":0.301,"game":"Louisiana Tech at Washington State","datetime":"Nov. 15, 10 p.m. ET","network":"The CW","week":"Week 12","phase":"Regular Season"},{"viewers":0.146,"game":"Wyoming at Fresno State","datetime":"Nov. 15, 10:30 p.m. ET","network":"FS1","week":"Week 12","phase":"Regular Season"},{"viewers":0.133,"game":"Kansas State at Oklahoma State","datetime":"Nov. 15, Noon ET","network":"ESPNU","week":"Week 12","phase":"Regular Season"},{"viewers":0.07,"game":"Kent State at Akron","datetime":"Nov. 11, 7:30 p.m. ET","network":"ESPNU","week":"Week 12","phase":"Regular Season"},{"viewers":0.054,"game":"Memphis at ECU","datetime":"Nov. 15, 4 p.m. ET","network":"ESPNU","week":"Week 12","phase":"Regular Season"},{"viewers":0.033,"game":"NIU at UMass","datetime":"Nov. 12, 7 p.m. ET","network":"ESPNU","week":"Week 12","phase":"Regular Season"},{"viewers":0.031,"game":"Kennesaw State at Jax State","datetime":"Nov. 15, 8 p.m. ET","network":"ESPNU","week":"Week 12","phase":"Regular Season"},{"viewers":5.6,"game":"Arkansas at Texas","datetime":"Nov. 22, 3:30 p.m. ET","network":"ABC","week":"Week 13","phase":"Regular Season"},{"viewers":5.428,"game":"USC at Oregon","datetime":"Nov. 22, 3:30 p.m. ET","network":"CBS","week":"Week 13","phase":"Regular Season"},{"viewers":5.4,"game":"Missouri at Oklahoma","datetime":"Nov. 22, Noon ET","network":"ABC","week":"Week 13","phase":"Regular Season"},{"viewers":4.8,"game":"Tennessee at Florida","datetime":"Nov. 22, 7:30 p.m. ET","network":"ABC","week":"Week 13","phase":"Regular Season"},{"viewers":4.063,"game":"Rutgers at Ohio State","datetime":"Nov. 22, Noon ET","network":"FOX","week":"Week 13","phase":"Regular Season"},{"viewers":3.104,"game":"Nebraska at Penn State","datetime":"Nov. 22, 7 p.m. ET","network":"NBC","week":"Week 13","phase":"Regular Season"},{"viewers":2.6,"game":"BYU at Cincinnati","datetime":"Nov. 22, 8 p.m. ET","network":"FOX","week":"Week 13","phase":"Regular Season"},{"viewers":2.1,"game":"Florida State at NC State","datetime":"Nov. 21, 8 p.m. ET","network":"ESPN","week":"Week 13","phase":"Regular Season"},{"viewers":2.034,"game":"Pitt at Georgia Tech","datetime":"Nov. 22, 7 p.m. ET","network":"ESPN","week":"Week 13","phase":"Regular Season"},{"viewers":1.942,"game":"Miami at Virginia Tech","datetime":"Nov. 22, Noon ET","network":"ESPN","week":"Week 13","phase":"Regular Season"},{"viewers":1.887,"game":"Syracuse at Notre Dame","datetime":"Nov. 22, 3:30 p.m. ET","network":"NBC","week":"Week 13","phase":"Regular Season"},{"viewers":1.617,"game":"Washington at UCLA","datetime":"Nov. 22, 10:30 p.m. ET","network":"NBC","week":"Week 13","phase":"Regular Season"},{"viewers":1.485,"game":"Michigan at Maryland","datetime":"Nov. 22, 4 p.m. ET","network":"BTN","week":"Week 13","phase":"Regular Season"},{"viewers":1.292,"game":"TCU at Houston","datetime":"Nov. 22, 4 p.m. ET","network":"FOX","week":"Week 13","phase":"Regular Season"},{"viewers":1.144,"game":"Kentucky at Vanderbilt","datetime":"Nov. 22, 3:30 p.m. ET","network":"ABC","week":"Week 13","phase":"Regular Season"},{"viewers":1.106,"game":"Arizona State at Colorado","datetime":"Nov. 22, 8 p.m. ET","network":"ESPN2","week":"Week 13","phase":"Regular Season"},{"viewers":1.103,"game":"Michigan State at Iowa","datetime":"Nov. 22, 3:30 p.m. ET","network":"FS1","week":"Week 13","phase":"Regular Season"},{"viewers":0.979,"game":"Illinois at Wisconsin","datetime":"Nov. 22, 7:30 p.m. ET","network":"BTN","week":"Week 13","phase":"Regular Season"},{"viewers":0.955,"game":"Kansas State at Utah","datetime":"Nov. 22, 4 p.m. ET","network":"ESPN2","week":"Week 13","phase":"Regular Season"},{"viewers":0.695,"game":"Kansas at Iowa State","datetime":"Nov. 22, Noon ET","network":"FS1","week":"Week 13","phase":"Regular Season"},{"viewers":0.441,"game":"Minnesota at Northwestern","datetime":"Nov. 22, Noon ET","network":"BTN","week":"Week 13","phase":"Regular Season"},{"viewers":0.357,"game":"Louisville at SMU","datetime":"Nov. 22, Noon ET","network":"ESPN2","week":"Week 13","phase":"Regular Season"},{"viewers":0.327,"game":"Miami (OH) at Buffalo","datetime":"Nov. 19, 7 p.m. ET","network":"ESPN2","week":"Week 13","phase":"Regular Season"},{"viewers":0.2996,"game":"Baylor at Arizona","datetime":"Nov. 22, 1 p.m. ET","network":"TNT","week":"Week 13","phase":"Regular Season"},{"viewers":0.299,"game":"Colorado State at Boise State","datetime":"Nov. 22, 7 p.m. ET","network":"FS1","week":"Week 13","phase":"Regular Season"},{"viewers":0.288,"game":"Furman at Clemson","datetime":"Nov. 22, 4:30 p.m. ET","network":"The CW","week":"Week 13","phase":"Regular Season"},{"viewers":0.279,"game":"Western Michigan at NIU","datetime":"Nov. 22, 7 p.m. ET","network":"ESPN2","week":"Week 13","phase":"Regular Season"},{"viewers":0.269,"game":"Hawaii at UNLV","datetime":"Nov. 121, 10:30 p.m. ET","network":"FS1","week":"Week 13","phase":"Regular Season"},{"viewers":0.146,"game":"San Jose State at San Diego State","datetime":"Nov. 22, 10:30 p.m. ET","network":"FS1","week":"Week 13","phase":"Regular Season"},{"viewers":0.068,"game":"Central Michigan at Kent State","datetime":"Nov. 19, 7 p.m. ET","network":"ESPNU","week":"Week 13","phase":"Regular Season"},{"viewers":0.059,"game":"Akron at Bowling Green","datetime":"Nov. 18, 7 p.m. ET","network":"ESPNU","week":"Week 13","phase":"Regular Season"},{"viewers":0.045,"game":"North Texas at Rice","datetime":"Nov. 22, 7:30 p.m. ET","network":"ESPNU","week":"Week 13","phase":"Regular Season"},{"viewers":0.043,"game":"Tulane at Temple","datetime":"Nov. 22, 3:30 p.m. ET","network":"ESPNU","week":"Week 13","phase":"Regular Season"},{"viewers":18.424,"game":"Ohio State vs. Michigan","datetime":"Nov. 29, Noon ET","network":"FOX","week":"Week 14","phase":"Regular Season"},{"viewers":13.044,"game":"Texas vs. Texas A&M","datetime":"Nov. 28, 7:30 p.m. ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":11.31,"game":"Alabama vs. Auburn","datetime":"Nov. 29, 7:30 p.m. ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":8.716,"game":"Georgia vs. Georgia Tech","datetime":"Nov. 28, 3:30 p.m. ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":6.385,"game":"LSU vs. Oklahoma","datetime":"Nov. 29, 3:30 p.m. ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":5.232,"game":"Ole Miss vs. Mississippi State","datetime":"Nov. 28, Noon ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":4.01,"game":"Vanderbilt vs. Tennessee","datetime":"Nov. 29, 3:30 p.m. ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":4.27,"game":"Oregon vs. Washington","datetime":"Nov. 29, 3:30 p.m. ET","network":"CBS","week":"Week 14","phase":"Regular Season"},{"viewers":3.769,"game":"Iowa vs. Nebraska","datetime":"Nov. 28, 3:30 p.m. ET","network":"CBS","week":"Week 14","phase":"Regular Season"},{"viewers":2.741,"game":"Cincinnati vs. TCU","datetime":"Nov. 29, 3:30 p.m. ET","network":"FOX","week":"Week 14","phase":"Regular Season"},{"viewers":2.685,"game":"Indiana vs. Purdue","datetime":"Nov. 28, 7:30 p.m. ET","network":"NBC","week":"Week 14","phase":"Regular Season"},{"viewers":2.224,"game":"UCLA vs. USC","datetime":"Nov. 29, 7:30 p.m. ET","network":"NBC","week":"Week 14","phase":"Regular Season"},{"viewers":2.217,"game":"Miami vs. Pitt","datetime":"Nov. 29, Noon ET","network":"ABC","week":"Week 14","phase":"Regular Season"},{"viewers":2.008,"game":"Boise State vs. Utah State","datetime":"Nov. 28, 4 p.m. ET","network":"CBS","week":"Week 14","phase":"Regular Season"},{"viewers":1.824,"game":"Arizona vs. Arizona State","datetime":"Nov. 28, 9 p.m. ET","network":"FOX","week":"Week 14","phase":"Regular Season"},{"viewers":1.761,"game":"Florida State vs. Florida","datetime":"Nov. 29, 4:30 p.m. ET","network":"ESPN2","week":"Week 14","phase":"Regular Season"},{"viewers":1.528,"game":"Northwestern vs. Illinois","datetime":"Nov. 29, 7:30 p.m. ET","network":"FOX","week":"Week 14","phase":"Regular Season"},{"viewers":1.518,"game":"Notre Dame vs. Stanford","datetime":"Nov. 29, 10:30 p.m. ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":1.404,"game":"Virginia Tech vs. Virginia","datetime":"Nov. 29, 7 p.m. ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":1.274,"game":"Wisconsin vs. Minnesota","datetime":"Nov. 29, 3:30 p.m. ET","network":"FS1","week":"Week 14","phase":"Regular Season"},{"viewers":1.116,"game":"Utah vs. Kansas","datetime":"Nov. 28, Noon ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":0.95,"game":"Penn State vs. Rutgers","datetime":"Nov. 29, 3:30 p.m. ET","network":"BTN","week":"Week 14","phase":"Regular Season"},{"viewers":0.895,"game":"Texas Tech vs. West Virginia","datetime":"Nov. 29, Noon ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":0.78,"game":"Navy vs. Memphis","datetime":"Nov. 27, 7:30 p.m. ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":0.716,"game":"UCF vs. BYU","datetime":"Nov. 29, 1 p.m. ET","network":"ESPN2","week":"Week 14","phase":"Regular Season"},{"viewers":0.66,"game":"Maryland vs. Michigan State","datetime":"Nov. 29, 7 p.m. ET","network":"FS1","week":"Week 14","phase":"Regular Season"},{"viewers":0.531,"game":"SMU vs. Cal","datetime":"Nov. 29, 8 p.m. ET","network":"ESPN2","week":"Week 14","phase":"Regular Season"},{"viewers":0.515,"game":"Oregon State vs. Washington State","datetime":"Nov. 29, 6:30 p.m. ET","network":"The CW","week":"Week 14","phase":"Regular Season"},{"viewers":0.48,"game":"Temple vs. North Texas","datetime":"Nov. 29, 3:30 p.m. ET","network":"ESPN","week":"Week 14","phase":"Regular Season"},{"viewers":0.468,"game":"Colorado vs. Kansas State","datetime":"Nov. 29, Noon ET","network":"FS1","week":"Week 14","phase":"Regular Season"},{"viewers":0.403,"game":"Western Michigan vs. Eastern Michigan","datetime":"Nov. 25, 7:30 p.m. ET","network":"ESPN2","week":"Week 14","phase":"Regular Season"},{"viewers":0.305,"game":"Boston College vs. Syracuse","datetime":"Nov. 29, 3 p.m. ET","network":"The CW","week":"Week 14","phase":"Regular Season"},{"viewers":0.223,"game":"Fresno State vs. San Jose State","datetime":"Nov. 29, 10:30 p.m. ET","network":"FS1","week":"Week 14","phase":"Regular Season"},{"viewers":0.221,"game":"Houston vs. Baylor","datetime":"Nov. 29, Noon ET","network":"TNT","week":"Week 14","phase":"Regular Season"},{"viewers":0.1478,"game":"Iowa State vs. Oklahoma State","datetime":"Nov. 29, Noon ET","network":"ESPNU","week":"Week 14","phase":"Regular Season"},{"viewers":0.1478,"game":"Air Force vs. Colorado State","datetime":"Nov. 28, 3 p.m. ET","network":"FS1","week":"Week 14","phase":"Regular Season"},{"viewers":0.063,"game":"Ohio vs. Buffalo","datetime":"Nov. 28, Noon ET","network":"ESPNU","week":"Week 14","phase":"Regular Season"},{"viewers":0.0596,"game":"Bowling Green vs. UMass","datetime":"Nov. 25, 4:30 p.m. ET","network":"ESPNU","week":"Week 14","phase":"Regular Season"},{"viewers":0.038,"game":"Charlotte vs. Tulane","datetime":"Nov. 29, 7:30 p.m. ET","network":"ESPNU","week":"Week 14","phase":"Regular Season"},{"viewers":0.036,"game":"James Madison vs. Coastal Carolina","datetime":"Nov. 29, 3:30 p.m. ET","network":"ESPNU","week":"Week 14","phase":"Regular Season"},{"viewers":18.332,"game":"Big Ten Championship: Indiana vs. Ohio State","datetime":"Dec. 6, 8 p.m. ET","network":"FOX","week":"Conference Championships","phase":"Conference Championship"},{"viewers":16.865,"game":"SEC Championship: Georgia vs. Alabama","datetime":"Dec. 6, 4 p.m. ET","network":"ABC","week":"Conference Championships","phase":"Conference Championship"},{"viewers":8.988,"game":"Big 12 Championship: BYU vs. Texas Tech","datetime":"Dec. 6, Noon ET","network":"ABC","week":"Conference Championships","phase":"Conference Championship"},{"viewers":3.8798,"game":"ACC Championship: Duke vs. Virginia","datetime":"Dec. 6, 8 p.m. ET","network":"ABC","week":"Conference Championships","phase":"Conference Championship"},{"viewers":2.412,"game":"American Championship: Tulane vs. North Texas","datetime":"Dec. 5, 8 p.m. ET","network":"ABC","week":"Conference Championships","phase":"Conference Championship"},{"viewers":1.516,"game":"Mountain West Championship: UNLV vs. Boise State","datetime":"Dec. 5, 8 p.m. ET","network":"FOX","week":"Conference Championships","phase":"Conference Championship"},{"viewers":1.146,"game":"Sun Belt Championship: Troy vs. James Madison","datetime":"Dec. 5, 7 p.m. ET","network":"ESPN","week":"Conference Championships","phase":"Conference Championship"},{"viewers":1.061,"game":"MAC Championship: Miami (OH) vs. Western Michigan","datetime":"Dec. 6, Noon ET","network":"ESPN","week":"Conference Championships","phase":"Conference Championship"},{"viewers":7.84,"game":"Army vs. Navy","datetime":"Dec, 14, 3 p.m. ET","network":"CBS","week":"Army-Navy","phase":"Army-Navy"},{"viewers":9.051,"game":"Citrus Bowl: Michigan vs. Texas","datetime":"Dec. 31, 3 p.m. ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":8.696,"game":"Pop-Tarts Bowl: BYU vs. Georgia Tech","datetime":"Dec. 27, 3:30 p.m. ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":7.604,"game":"Pinstripe Bowl: Penn State vs. Clemson","datetime":"Dec. 27, Noon ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":5.966,"game":"Gator Bowl: Virginia vs. Missouri","datetime":"Dec. 27, 7:30 p.m. ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":5.384,"game":"Music City Bowl: Tennessee vs. Illinois","datetime":"Dec. 30, 5:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":4.92,"game":"Alamo Bowl: USC vs. TCU","datetime":"Dec. 30, 9 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":4.595,"game":"ReliaQuest Bowl: Iowa vs. Vanderbilt","datetime":"Dec. 31, Noon ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":4.429,"game":"Rate Bowl: New Mexico vs. Minnesota","datetime":"Dec. 26, 4:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":3.786,"game":"L.A. Bowl: Boise State vs. Washington","datetime":"Dec. 13, 8 p.m. ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":3.435,"game":"Liberty Bowl: Navy vs. Cincinnati","datetime":"Jan. 2, 4:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":3.132,"game":"First Responder Bowl: FIU vs. UTSA","datetime":"Dec. 26, 8 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":3.022,"game":"Las Vegas Bowl: Nebraska vs. Utah","datetime":"Dec. 31, 3:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.923,"game":"Texas Bowl: LSU vs. Houston","datetime":"Dec. 27, 9:15 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.701,"game":"Hawaii Bowl: Cal vs. Hawaii","datetime":"Dec. 24, 8 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.614,"game":"Duke's Mayo Bowl: Wake Forest vs. Mississippi State","datetime":"Jan. 2, 8 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.514,"game":"Military Bowl: Pitt vs. ECU","datetime":"Dec. 27, Noon ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.393,"game":"GameAbove Sports Bowl: Northwestern vs. Central Michigan","datetime":"Dec. 26, 1 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.315,"game":"Celebration Bowl: South Carolina State vs. Prairie View A&M","datetime":"Dec. 13, Noon ET","network":"ABC","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.338,"game":"Holiday Bowl: Arizona vs. SMU","datetime":"Jan. 2, 8 p.m. ET","network":"FOX","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.168,"game":"Sun Bowl: Arizona State vs. Duke","datetime":"Dec. 31, 2 p.m. ET","network":"CBS","week":"Bowl Games","phase":"Bowl Game"},{"viewers":2.0,"game":"Western Kentucky vs. Southern Miss","datetime":"Dec. 23, 5:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.8,"game":"Fenway Bowl: UConn vs. Army","datetime":"Dec. 27, 2:15 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.801,"game":"Armed Forces Bowl: Rice vs. Texas State","datetime":"Jan. 2, 1 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.754,"game":"Independence Bowl: Coastal Carolina vs. Louisiana Tech","datetime":"Dec. 30, 2 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.7,"game":"Frisco Bowl: UNLV vs. Ohio","datetime":"Dec. 23, 9 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.6,"game":"Bush's Boca Raton Bowl of Beans: Toledo vs. Louisville","datetime":"Dec. 23, 2 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.507,"game":"Gasparilla Bowl: Memphis vs. NC State","datetime":"Dec. 19, 2:30 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.4,"game":"New Mexico Bowl: North Texas vs. San Diego State","datetime":"Dec. 27, 5:45 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.2,"game":"Famous Idaho Potato Bowl: Washington State vs. Utah State","datetime":"Dec. 22, 2 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.2,"game":"Birmingham Bowl: Georgia Southern vs. Appalachian State","datetime":"Dec. 29, 2 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.185,"game":"68 Ventures Bowl: Louisiana vs. Delaware","datetime":"Dec. 17, 8:40 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":1.183,"game":"Cure Bowl: USF vs. Old Dominion","datetime":"Dec. 17, 5 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":0.959,"game":"Salute to Veterans Bowl: Troy vs. Jacksonville State","datetime":"Dec. 16, 9 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":0.809,"game":"Myrtle Beach Bowl: Kennesaw State vs. Western Michigan","datetime":"Dec. 19, 11 a.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":0.639,"game":"Arizona Bowl: Fresno State vs. Miami (OH)","datetime":"Dec. 27, 4:30 p.m. ET","network":"The CW","week":"Bowl Games","phase":"Bowl Game"},{"viewers":0.457,"game":"Xbox Bowl: Missouri State vs. Arkansas State","datetime":"Dec. 18, 9 p.m. ET","network":"ESPN","week":"Bowl Games","phase":"Bowl Game"},{"viewers":30.1,"game":"Indiana vs. Miami","datetime":"National Championship \u2013 Jan. 19, 7:30 p.m. ET","network":"ESPN/ESPN2/ESPNU","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":23.9,"game":"Rose Bowl: Alabama vs. Indiana","datetime":"Quarterfinal \u2013 Jan. 1, 4 p.m. ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":19.018,"game":"Cotton Bowl: Miami vs. Ohio State","datetime":"Quarterfinal \u2013 Dec. 31, 7:30 p.m. ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":18.664,"game":"Sugar Bowl: Ole Miss vs. Georgia","datetime":"Quarterfinal \u2013 Jan. 1, 7 p.m. ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":18.0,"game":"Peach Bowl: Indiana vs. Oregon","datetime":"Semifinal \u2013 Jan. 9, 7:30 p.m. ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":15.9,"game":"Orange Bowl: Oregon vs. Texas Tech","datetime":"Quarterfinal \u2013 Jan. 1, Noon ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":15.8,"game":"Fiesta Bowl: Miami vs. Ole Miss","datetime":"Semifinal \u2013 Jan. 8, 7:30 p.m. ET","network":"ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":14.9,"game":"Alabama at Oklahoma","datetime":"First Round \u2013 Dec. 19, 8 p.m. ET","network":"ABC/ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":14.8,"game":"Miami at Texas A&M","datetime":"First Round \u2013 Dec. 20, Noon ET","network":"ABC/ESPN","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":6.2,"game":"Tulane at Ole Miss","datetime":"First Round \u2013 Dec. 20, 3:30 p.m. ET","network":"TNT/TBS/truTV","week":"College Football Playoff","phase":"College Football Playoff"},{"viewers":4.4,"game":"James Madison at Oregon","datetime":"First Round \u2013 Dec. 20, 7:30 p.m. ET","network":"TNT/TBS/truTV","week":"College Football Playoff","phase":"College Football Playoff"}];
+const WEEK_ORDER = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", "Week 13", "Week 14", "Conference Championships", "Army-Navy", "Bowl Games", "College Football Playoff"];
 
-const DATA = [{"viewers": 16.6, "game": "Texas at Ohio State", "dateTime": "Sat Aug. 30, Noon ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1963353628426867152", "phase": "Regular Season", "week": 1}, {"viewers": 10.8, "game": "Notre Dame at Miami", "dateTime": "Sun, Aug. 31, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 10.7, "game": "Alabama at Florida State", "dateTime": "Sat Aug. 30, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 10.4, "game": "LSU at Clemson", "dateTime": "Sat, Aug. 30, 8pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 6.1, "game": "TCU at North Carolina", "dateTime": "Mon, Sept. 1, 8pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 5.4, "game": "Virginia Tech at South Carolina", "dateTime": "Sun Aug. 31, 4:30pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 3.7, "game": "Georgia Tech at Colorado", "dateTime": "Fri, Aug. 30, 9pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 3.3, "game": "Nebraska vs. Cincinnati", "dateTime": "Thurs Aug. 29, 8pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1963373812260512250", "phase": "Regular Season", "week": 1}, {"viewers": 2.83, "game": "Auburn at Baylor", "dateTime": "Fri, Aug. 30, 9pm ET", "network": "FOX", "source": "https://programminginsider.com/friday-ratings-espn-wins-second-consecutive-night-with-college-football/", "phase": "Regular Season", "week": 1}, {"viewers": 2.6, "game": "Syracuse vs. Tennessee", "dateTime": "Sat, Aug. 30, Noon ET", "network": "ABC", "source": "https://espnpressroom.com/us/press-releases/2025/09/espn-and-abc-rewrite-week-1-viewership-history-books-college-gameday-shatters-all-time-audience-record/", "phase": "Regular Season", "week": 1}, {"viewers": 2.06, "game": "New Mexico at Michigan", "dateTime": "Sat, Aug. 30, 8pm ET", "network": "NBC", "source": "https://programminginsider.com/saturday-ratings-college-gameday-on-espn-earns-its-all-time-viewer-high-with-lee-corso-farewell/", "phase": "Regular Season", "week": 1}, {"viewers": 1.02, "game": "UTSA at Texas A&M", "dateTime": "Sat, Aug. 30, 7pm ET", "network": "ESPN", "source": "https://programminginsider.com/saturday-ratings-college-gameday-on-espn-earns-its-all-time-viewer-high-with-lee-corso-farewell/", "phase": "Regular Season", "week": 1}, {"viewers": 0.235, "game": "Missouri State at USC", "dateTime": "Sat, Aug. 30, 7:30pm ET", "network": "BTN", "source": "https://programminginsider.com/saturday-ratings-college-gameday-on-espn-earns-its-all-time-viewer-high-with-lee-corso-farewell/", "phase": "Regular Season", "week": 1}, {"viewers": 9.7, "game": "Michigan at Oklahoma", "dateTime": "9/6, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1965541759515328725", "phase": "Regular Season", "week": 2}, {"viewers": 4.8, "game": "Ole Miss at Kentucky", "dateTime": "9/6, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1965541759515328725", "phase": "Regular Season", "week": 2}, {"viewers": 4.278, "game": "Iowa at Iowa State", "dateTime": "9/6, 12pm ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1965536257758699627", "phase": "Regular Season", "week": 2}, {"viewers": 3.7, "game": "San Jose State at Texas", "dateTime": "9/6, 12pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1965541759515328725", "phase": "Regular Season", "week": 2}, {"viewers": 2.685, "game": "Delaware at Colorado", "dateTime": "9/6, 3:30pm ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1965536257758699627", "phase": "Regular Season", "week": 2}, {"viewers": 2.32, "game": "Oklahoma State at Oregon", "dateTime": "9/6, 3:30pm ET", "network": "CBS", "source": "https://www.sportsmediawatch.com/sports-ratings-tracker/", "phase": "Regular Season", "week": 2}, {"viewers": 2.2, "game": "Illinois at Duke", "dateTime": "9/6, 12pm ET", "network": "ESPN", "source": "https://espnpressroom.com/us/press-releases/2025/09/abc-scores-three-of-the-top-four-best-audiences-of-college-footballs-week-2-college-gameday-delivers-second-most-watched-regular-season-show-on-record/", "phase": "Regular Season", "week": 2}, {"viewers": 1.8, "game": "Kansas at Missouri", "dateTime": "9/6, 3:30pm ET", "network": "ESPN2", "source": "https://espnpressroom.com/us/press-releases/2025/09/abc-scores-three-of-the-top-four-best-audiences-of-college-footballs-week-2-college-gameday-delivers-second-most-watched-regular-season-show-on-record/", "phase": "Regular Season", "week": 2}, {"viewers": 1.8, "game": "Grambling at Ohio State", "dateTime": "9/6, 3:30pm ET", "network": "BTN", "source": "https://www.sportsbusinessjournal.com/Articles/2025/09/11/espnabc-off-to-best-start-to-college-football-season-since-2009/", "phase": "Regular Season", "week": 2}, {"viewers": 1.6, "game": "Boston College at Michigan State", "dateTime": "9/6, 7:30pm ET", "network": "NBC", "source": "", "phase": "Regular Season", "week": 2}, {"viewers": 1.003, "game": "Baylor at SMU", "dateTime": "9/6, 12pm ET", "network": "The CW", "source": "https://x.com/TheCW_Sports/status/1965476160760144359", "phase": "Regular Season", "week": 2}, {"viewers": 0.818, "game": "James Madison at Louisville", "dateTime": "9/5, 7pm ET", "network": "ESPN", "source": "https://programminginsider.com/friday-ratings-first-ever-youtube-exclusive-nfl-game-delivers-over-16-million-viewers-domestically-additional-1-million-overseas/", "phase": "Regular Season", "week": 2}, {"viewers": 0.565, "game": "Fresno State at Oregon State", "dateTime": "9/6, 3:30pm ET", "network": "The CW", "source": "https://www.sportsmediawatch.com/sports-ratings-tracker/", "phase": "Regular Season", "week": 2}, {"viewers": 0.54, "game": "San Diego State at Washington State", "dateTime": "9/6, 10:15pm ET", "network": "The CW", "source": "https://www.sportsmediawatch.com/sports-ratings-tracker/", "phase": "Regular Season", "week": 2}, {"viewers": 0.179, "game": "NIU at Maryland", "dateTime": "9/6, 7:30pm ET", "network": "BTN", "source": "https://programminginsider.com/friday-ratings-first-ever-youtube-exclusive-nfl-game-delivers-over-16-million-viewers-domestically-additional-1-million-overseas/", "phase": "Regular Season", "week": 2}, {"viewers": 12.6, "game": "Georgia at Tennessee", "dateTime": "Sept. 13, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1968077595561562520", "phase": "Regular Season", "week": 3}, {"viewers": 7.6, "game": "Florida at LSU", "dateTime": "Sept. 13, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1968077595561562520", "phase": "Regular Season", "week": 3}, {"viewers": 6.2, "game": "Texas A&M at Notre Dame", "dateTime": "Sept. 13, 7:30pm ET", "network": "NBC", "source": "https://x.com/NBCSportsPR/status/1968047094591258995", "phase": "Regular Season", "week": 3}, {"viewers": 4.8, "game": "Clemson at Georgia Tech", "dateTime": "Sept. 13, Noon ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1968077595561562520", "phase": "Regular Season", "week": 3}, {"viewers": 4.5, "game": "Wisconsin at Alabama", "dateTime": "Sept. 13, Noon ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1968077595561562520", "phase": "Regular Season", "week": 3}, {"viewers": 2.9, "game": "Colorado at Houston", "dateTime": "Sept. 12, 7:30pm ET", "network": "ESPN", "source": "https://programminginsider.com/friday-ratings-cable-networks-are-tops-in-prime-time/", "phase": "Regular Season", "week": 3}, {"viewers": 2.277, "game": "Oregon at Northwestern", "dateTime": "Sept. 13, Noon ET", "network": "FOX", "source": "https://www.sportsbusinessjournal.com/Articles/2025/09/17/audience-analysis-fox-sets-sunday-nfl-record-wnba-playoffs-start-strong-even-without-caitlin-clark/", "phase": "Regular Season", "week": 3}, {"viewers": 1.867, "game": "Kansas State at Arizona", "dateTime": "Sept. 12, 9pm ET", "network": "FOX", "source": "https://www.sportsbusinessjournal.com/Articles/2025/09/17/audience-analysis-fox-sets-sunday-nfl-record-wnba-playoffs-start-strong-even-without-caitlin-clark/", "phase": "Regular Season", "week": 3}, {"viewers": 1.708, "game": "Pitt at West Virginia", "dateTime": "Sept. 13, 3:30pm ET", "network": "ESPN", "source": "https://www.sportsbusinessjournal.com/Articles/2025/09/17/audience-analysis-fox-sets-sunday-nfl-record-wnba-playoffs-start-strong-even-without-caitlin-clark/", "phase": "Regular Season", "week": 3}, {"viewers": 1.432, "game": "Arkansas at Ole Miss", "dateTime": "Sept. 13, 7:30pm ET", "network": "ESPN", "source": "https://programminginsider.com/saturday-ratings-abc-and-nbc-achieve-college-football-viewer-milestones/", "phase": "Regular Season", "week": 3}, {"viewers": 1.271, "game": "USC at Purdue (delayed)", "dateTime": "Sept. 13, 8pm ET", "network": "CBS", "source": "https://programminginsider.com/saturday-ratings-abc-and-nbc-achieve-college-football-viewer-milestones/", "phase": "Regular Season", "week": 3}, {"viewers": 1.047, "game": "NC State at Wake Forest", "dateTime": "Sept. 11, 7:30pm ET", "network": "ESPN", "source": "https://programminginsider.com/thursday-ratings-commanders-packers-kicks-off-nfl-thursday-night-football-season-on-prime-video/", "phase": "Regular Season", "week": 3}, {"viewers": 0.904, "game": "Minnesota at Cal", "dateTime": "Sept. 13, 10:30pm ET", "network": "ESPN", "source": "https://programminginsider.com/saturday-ratings-abc-and-nbc-achieve-college-football-viewer-milestones/", "phase": "Regular Season", "week": 3}, {"viewers": 0.859, "game": "Oregon State at Texas Tech", "dateTime": "Sept. 13, 8pm ET", "network": "FOX", "source": "https://programminginsider.com/saturday-ratings-abc-and-nbc-achieve-college-football-viewer-milestones/", "phase": "Regular Season", "week": 3}, {"viewers": 0.72, "game": "USF at Miami (delayed)", "dateTime": "Sept. 13, 3:30pm ET", "network": "The CW", "source": "https://www.sportsmediawatch.com/sports-ratings-tracker/", "phase": "Regular Season", "week": 3}, {"viewers": 0.71, "game": "UMass at Iowa", "dateTime": "Sept. 13, 7:30pm ET", "network": "BTN", "source": "https://programminginsider.com/saturday-ratings-abc-and-nbc-achieve-college-football-viewer-milestones/", "phase": "Regular Season", "week": 3}, {"viewers": 0.3, "game": "Indiana State at Indiana", "dateTime": "Sept. 12, 6:30pm ET", "network": "BTN", "source": "https://programminginsider.com/friday-ratings-cable-networks-are-tops-in-prime-time/", "phase": "Regular Season", "week": 3}, {"viewers": 6.5, "game": "Florida at Miami", "dateTime": "Sept. 20, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1970608030225179082", "phase": "Regular Season", "week": 4}, {"viewers": 6.1, "game": "Auburn at Oklahoma", "dateTime": "Sept. 20, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1970608030225179082", "phase": "Regular Season", "week": 4}, {"viewers": 5.3, "game": "Michigan at Nebraska", "dateTime": "Sept. 20, 3:30pm ET", "network": "CBS", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 4.04, "game": "Texas Tech at Utah", "dateTime": "Sept. 20, Noon ET", "network": "FOX", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 3.4, "game": "Syracuse at Clemson*", "dateTime": "Sept. 20, Noon ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1970608030225179082", "phase": "Regular Season", "week": 4}, {"viewers": 3.01, "game": "Iowa at Rutgers", "dateTime": "Sept. 19, 8pm ET", "network": "FOX", "source": "https://programminginsider.com/friday-ratings-fox-wins-in-prime-time-with-iowa-rutgers-college-football/", "phase": "Regular Season", "week": 4}, {"viewers": 2.5, "game": "Illinois at Indiana", "dateTime": "Sept. 20, 7:30pm ET", "network": "NBC", "source": "https://x.com/slmandel/status/1970626545665659305", "phase": "Regular Season", "week": 4}, {"viewers": 2.11, "game": "Arkansas at Memphis", "dateTime": "Sept. 20, Noon ET", "network": "ABC", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 2.1, "game": "Michigan State at USC", "dateTime": "Sept. 20, 11pm ET", "network": "FOX", "source": "https://x.com/AustinKarp/status/1970663728736604362", "phase": "Regular Season", "week": 4}, {"viewers": 2.03, "game": "North Carolina at UCF", "dateTime": "Sept. 20, 3:30pm ET", "network": "FOX", "source": "https://frontofficesports.com/belichicks-tar-heels-are-losing-momentum-on-the-field-and-on-tv/", "phase": "Regular Season", "week": 4}, {"viewers": 1.85, "game": "South Carolina at Missouri", "dateTime": "Sept. 20, 7pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 1.65, "game": "Washington at Washington State", "dateTime": "Sept. 20, 7:30pm ET", "network": "CBS", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 1.6, "game": "Arizona State at Baylor", "dateTime": "Sept. 20, 7:30pm ET", "network": "FOX", "source": "https://x.com/AustinKarp/status/1970663728736604362", "phase": "Regular Season", "week": 4}, {"viewers": 1.57, "game": "Tulsa at Oklahoma State", "dateTime": "Sept. 19, 7:30pm ET", "network": "ESPN", "source": "https://programminginsider.com/friday-ratings-fox-wins-in-prime-time-with-iowa-rutgers-college-football/", "phase": "Regular Season", "week": 4}, {"viewers": 1.34, "game": "Wyoming at Colorado", "dateTime": "Sept. 20, 10:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 1.05, "game": "Tulane at Ole Miss", "dateTime": "Sept. 20, 3:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.671, "game": "Rice at Charlotte", "dateTime": "Sept. 18, 7:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.663, "game": "NC State at Duke", "dateTime": "Sept. 20, 5:30pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.662, "game": "SMU at TCU", "dateTime": "Sept. 20, Noon ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.623, "game": "BYU at ECU", "dateTime": "Sept. 20, 7:30pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.074, "game": "UNLV at Miami (OH)", "dateTime": "Sept. 20, Noon ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.067, "game": "JMU at Liberty", "dateTime": "Sept. 20, 3:30pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 0.052, "game": "Georgia State at Vanderbilt", "dateTime": "Sept. 20, 7:45pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 4}, {"viewers": 10.42, "game": "Alabama at Georgia", "dateTime": "Sept. 27, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1973149845268603294", "phase": "Regular Season", "week": 5}, {"viewers": 7.739, "game": "Oregon at Penn State*", "dateTime": "Sept. 27, 7:30pm ET", "network": "NBC", "source": "https://x.com/NBCSportsPR/status/1973126744359010524", "phase": "Regular Season", "week": 5}, {"viewers": 6.7, "game": "LSU at Ole Miss", "dateTime": "Sept. 27, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1973149845268603294", "phase": "Regular Season", "week": 5}, {"viewers": 5.229, "game": "Ohio State at Washington", "dateTime": "Sept. 27, 3:30pm ET", "network": "CBS", "source": "https://x.com/CBSSportsGang/status/1973131154174910550", "phase": "Regular Season", "week": 5}, {"viewers": 4.4, "game": "Florida State at Virginia", "dateTime": "Sept. 26, 7pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1973149845268603294", "phase": "Regular Season", "week": 5}, {"viewers": 4.3, "game": "Notre Dame at Arkansas", "dateTime": "Sept. 27, Noon ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1973149845268603294", "phase": "Regular Season", "week": 5}, {"viewers": 4.116, "game": "USC at Illinois", "dateTime": "Sept. 27, Noon ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1973139373903192130", "phase": "Regular Season", "week": 5}, {"viewers": 2.473, "game": "Auburn at Texas A&M", "dateTime": "Sept. 27, 4 p.m. ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 5}, {"viewers": 2.458, "game": "BYU at Colorado", "dateTime": "Sept. 27, 10:15pm ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 5}, {"viewers": 1.853, "game": "Georgia Tech at Wake Forest", "dateTime": "Sept. 27, Noon ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 5}, {"viewers": 1.55, "game": "Houston at Oregon State", "dateTime": "Sept. 26, 10:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 1.15, "game": "Arizona at Iowa State", "dateTime": "Sept. 27, 7pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.891, "game": "Army at East Carolina", "dateTime": "Sept. 25, 7:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.58, "game": "Louisville at Pitt", "dateTime": "Sept. 27, Noon ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.396, "game": "Baylor at Oklahoma State", "dateTime": "Sept. 27, 3:30pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.151, "game": "Memphis at FAU", "dateTime": "Sept. 27, 7pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.102, "game": "UMass at Mizzou", "dateTime": "Sept. 27, 7:30pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.05, "game": "South Alabama at North Texas", "dateTime": "Sept. 27, Noon ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 0.031, "game": "Tulane at Tulsa", "dateTime": "Sept. 27, 4pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 5}, {"viewers": 6.4, "game": "Vanderbilt at Alabama", "dateTime": "Oct. 4, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1975679377657450711", "phase": "Regular Season", "week": 6}, {"viewers": 6.0, "game": "Miami at Florida State", "dateTime": "Oct. 4, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1975679377657450711", "phase": "Regular Season", "week": 6}, {"viewers": 4.627, "game": "Wisconsin at Michigan", "dateTime": "Oct. 4, 12pm ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1975679062484918652", "phase": "Regular Season", "week": 6}, {"viewers": 4.0, "game": "Texas at Florida", "dateTime": "Oct. 4, 3:30pm ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/1975679377657450711", "phase": "Regular Season", "week": 6}, {"viewers": 3.698, "game": "Minnesota at Ohio State", "dateTime": "Oct. 4, 7:30pm ET", "network": "NBC", "source": "https://programminginsider.com/saturday-ratings-mlb-division-series-gets-off-to-positivestart-on-tbs-fox-and-fs1/", "phase": "Regular Season", "week": 6}, {"viewers": 3.68, "game": "Kentucky at Georgia", "dateTime": "Oct. 4, 12pm ET", "network": "ABC", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 2.137, "game": "Colorado at TCU", "dateTime": "Oct. 4, 7:30pm ET", "network": "FOX", "source": "https://programminginsider.com/saturday-ratings-mlb-division-series-gets-off-to-positivestart-on-tbs-fox-and-fs1/", "phase": "Regular Season", "week": 6}, {"viewers": 1.87, "game": "Clemson at North Carolina", "dateTime": "Oct. 4, Noon ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 1.5, "game": "Michigan State at Nebraska", "dateTime": "Oct. 4, 4pm ET", "network": "FS1", "source": "https://x.com/FOXSportsPR/status/1975679062484918652", "phase": "Regular Season", "week": 6}, {"viewers": 1.451, "game": "Texas Tech at Houston", "dateTime": "Oct. 4, 7pm ET", "network": "ESPN", "source": "https://programminginsider.com/saturday-ratings-mlb-division-series-gets-off-to-positivestart-on-tbs-fox-and-fs1/", "phase": "Regular Season", "week": 6}, {"viewers": 1.41, "game": "West Virginia at BYU", "dateTime": "Oct. 3, 10:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 1.11, "game": "Iowa State at Cincinnati", "dateTime": "Oct. 4, 12pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 1.0, "game": "Duke at Cal", "dateTime": "Oct. 4, 10:30pm ET", "network": "ESPN", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 0.749, "game": "Charlotte at USF", "dateTime": "Oct. 3, 7pm ET", "network": "ESPN2", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 0.603, "game": "Virginia at Louisville", "dateTime": "Oct. 4, 1pm ET", "network": "The CW", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 0.049, "game": "Army at UAB", "dateTime": "Oct. 4, 12pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 0.041, "game": "Tulsa at Memphis", "dateTime": "Oct. 4, 8pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 0.022, "game": "Texas State at Arkansas State", "dateTime": "Oct. 4, 4pm ET", "network": "ESPNU", "source": "https://www.sportsmediawatch.com/college-football-tv-ratings/", "phase": "Regular Season", "week": 6}, {"viewers": 8.732, "game": "Oklahoma vs. Texas", "dateTime": "Week 7 \u2013 Oct. 11, 3:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1978219296200249664", "phase": "Regular Season", "week": 7}, {"viewers": 6.993, "game": "Alabama at Missouri", "dateTime": "Week 7 \u2013 Oct. 11, Noon ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1978219296200249664", "phase": "Regular Season", "week": 7}, {"viewers": 6.689, "game": "Georgia at Auburn", "dateTime": "Week 7 \u2013 Oct. 11, 7:30pm ET", "network": "ABC", "source": "https://x.com/ESPNPR/status/1978219296200249664", "phase": "Regular Season", "week": 7}, {"viewers": 5.871, "game": "Ohio State at Illinois", "dateTime": "Week 7 \u2013 Oct. 11, Noon ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1978219483107098682", "phase": "Regular Season", "week": 7}, {"viewers": 5.59, "game": "Indiana at Oregon", "dateTime": "Week 7 \u2013 Oct. 11, 3:30pm ET", "network": "CBS", "source": "https://x.com/CBSSportsGang/status/1978198167825928222", "phase": "Regular Season", "week": 7}, {"viewers": 4.3, "game": "Michigan at USC", "dateTime": "Week 7 \u2013 Oct. 11, 7:30pm ET", "network": "NBC", "source": "https://x.com/slmandel/status/1978229174746685728", "phase": "Regular Season", "week": 7}, {"viewers": 2.618, "game": "Florida at Texas A&M", "dateTime": "Week 7 \u2013 Oct. 11, 7pm ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 2.052, "game": "Pitt at Florida State", "dateTime": "Week 7 \u2013 Oct. 11, Noon ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 1.436, "game": "Iowa State at Colorado", "dateTime": "Week 7 \u2013 Oct. 11, 3:30pm ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 1.27, "game": "Arizona State at Utah", "dateTime": "Week 7 \u2013 Oct. 11, 10:30pm ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 1.103, "game": "USF at North Texas", "dateTime": "Week 7 \u2013 Oct. 10, 7:30pm ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.868, "game": "BYU at Arizona", "dateTime": "Week 7 \u2013 Oct. 11, 8pm ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.576, "game": "ECU at Tulane", "dateTime": "Week 7 \u2013 Oct. 9, 7:30pm ET", "network": "ESPN", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.338, "game": "Middle Tennessee at Missouri State", "dateTime": "Week 7 \u2013 Oct. 8, 7:30pm ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.215, "game": "Navy at Temple", "dateTime": "Week 7 \u2013 Oct. 11, 4pm ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.207, "game": "Louisiana at James Madison", "dateTime": "Week 7 \u2013 Oct. 11, Noon ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.145, "game": "Georgia Southern at Southern Miss", "dateTime": "Week 7 \u2013 Oct. 9, 8pm ET", "network": "ESPN2", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.053, "game": "Louisiana Tech at Kennesaw State", "dateTime": "Week 7 \u2013 Oct. 9, 7pm ET", "network": "ESPNU", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.027, "game": "Toledo at Bowling Green", "dateTime": "Week 7 \u2013 Oct. 11, Noon ET", "network": "ESPNU", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 0.02, "game": "Rice at UTSA", "dateTime": "Week 7 \u2013 Oct. 11, 7:30pm ET", "network": "ESPNU", "source": "ESPN PR/Nielsen", "phase": "Regular Season", "week": 7}, {"viewers": 9.787, "game": "Ole Miss at Georgia", "dateTime": "Week 8 \u2013 Oct. 18, 3:30pm ET", "network": "ABC", "source": "https://x.com/espnpr/status/1981007807991398570?s=46", "phase": "Regular Season", "week": 8}, {"viewers": 8.011, "game": "Tennessee at Alabama", "dateTime": "Week 8 \u2013 Oct. 18, 7:30pm ET", "network": "ABC", "source": "https://x.com/espnpr/status/1981007807991398570?s=46", "phase": "Regular Season", "week": 8}, {"viewers": 5.935, "game": "LSU at Vanderbilt", "dateTime": "Week 8 \u2013 Oct. 18, Noon ET", "network": "ABC", "source": "https://x.com/espnpr/status/1981007807991398570?s=46", "phase": "Regular Season", "week": 8}, {"viewers": 4.6, "game": "USC at Notre Dame", "dateTime": "Week 8 \u2013 Oct. 18, 7:30pm ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 8}, {"viewers": 4.321, "game": "Washington at Michigan", "dateTime": "Week 8 \u2013 Oct. 18, Noon ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1981022567608762501", "phase": "Regular Season", "week": 8}, {"viewers": 4.0, "game": "Ohio State at Wisconsin", "dateTime": "Week 8 \u2013 Oct. 18, 3:30pm ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 8}, {"viewers": 3.41, "game": "Louisville at Miami", "dateTime": "Week 8 \u2013 Oct. 17, 7pm ET", "network": "ESPN", "source": "https://x.com/espnpr/status/1981007807991398570?s=46", "phase": "Regular Season", "week": 8}, {"viewers": 2.661, "game": "Nebraska at Minnesota", "dateTime": "Week 8 \u2013 Oct. 17, 8pm ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1981022567608762501", "phase": "Regular Season", "week": 8}, {"viewers": 2.639, "game": "Texas at Kentucky", "dateTime": "Week 8 \u2013 Oct. 18, 7pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 2.558, "game": "Texas Tech at Arizona State", "dateTime": "Week 8 \u2013 Oct. 18, 4pm ET", "network": "FOX", "source": "https://x.com/FOXSportsPR/status/1981022567608762501", "phase": "Regular Season", "week": 8}, {"viewers": 2.0, "game": "Utah at BYU", "dateTime": "Week 8 \u2013 Oct. 18, 7:30pm ET", "network": "FOX", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 1.714, "game": "Duke at Georgia Tech", "dateTime": "Week 8 \u2013 Oct. 18, Noon ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 1.581, "game": "North Carolina at Cal", "dateTime": "Week 8 \u2013 Oct. 17, 10:30pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 1.569, "game": "Arkansas at Texas A&M", "dateTime": "Week 8 \u2013 Oct. 18, 5pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 1.415, "game": "Florida State at Stanford", "dateTime": "Week 8 \u2013 Oct. 18, 10:30pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.579, "game": "Delaware at Jacksonville State", "dateTime": "Week 8 \u2013 Oct. 15, 7pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.526, "game": "Tulsa at East Carolina", "dateTime": "Week 8 \u2013 Oct. 16, 7:30pm ET", "network": "ESPN", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.423, "game": "Baylor at TCU", "dateTime": "Week 8 \u2013 Oct. 18, Noon ET", "network": "ESPN2", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.316, "game": "Cincinnati at Oklahoma State", "dateTime": "Week 8 \u2013 Oct. 18, 8pm ET", "network": "ESPN2", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.306, "game": "Arkansas State at South Alabama", "dateTime": "Week 8 \u2013 Oct. 14, 7:30pm ET", "network": "ESPN2", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.246, "game": "Memphis at UAB", "dateTime": "Week 8 \u2013 Oct. 18, 4pm ET", "network": "ESPN2", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.07, "game": "Army at Tulane", "dateTime": "Week 8 \u2013 Oct. 18, Noon ET", "network": "ESPNU", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.047, "game": "FIU at Western Kentucky", "dateTime": "Week 8 \u2013 Oct. 14, 8pm ET", "network": "ESPNU", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.038, "game": "Florida Atlantic at USF", "dateTime": "Week 8 \u2013 Oct. 18, 7:30pm ET", "network": "ESPNU", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 0.037, "game": "Old Dominion at James Madison", "dateTime": "Week 8 \u2013 Oct. 18, 3:30pm ET", "network": "ESPNU", "source": "ESPN PR", "phase": "Regular Season", "week": 8}, {"viewers": 7.842, "game": "Alabama at South Carolina", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 6.76, "game": "Texas A&M at LSU", "dateTime": "Week 9 \u2013 Oct. 25, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 6.554, "game": "Ole Miss at Oklahoma", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 3.634, "game": "Michigan at Michigan State", "dateTime": "Week 9 \u2013 Oct. 25, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 3.072, "game": "Missouri at Vanderbilt", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 3.023, "game": "UCLA at Indiana", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 2.659, "game": "BYU at Iowa State", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.598, "game": "Minnesota at Iowa", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.291, "game": "Utah at Colorado", "dateTime": "Week 9 \u2013 Oct. 25, 10 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.271, "game": "Syracuse at Georgia Tech", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.212, "game": "Stanford at Miami", "dateTime": "Week 9 \u2013 Oct. 25, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.166, "game": "Wisconsin at Oregon", "dateTime": "Week 9 \u2013 Oct. 25, 7 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 1.106, "game": "Virginia Tech at Cal", "dateTime": "Week 9 \u2013 Oct. 24, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.835, "game": "Northwestern at Nebraska", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.773, "game": "Illinois at Washington", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.467, "game": "Kansas State at Kansas", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.453, "game": "Baylor at Cincinnati", "dateTime": "Week 9 \u2013 Oct. 25, 4 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.417, "game": "Middle Tennessee at Delaware", "dateTime": "Week 9 \u2013 Oct. 22, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.402, "game": "Houston at Arizona State", "dateTime": "Week 9 - Oct. 25, 8 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.4, "game": "South Alabama at Georgia State", "dateTime": "Week 9 \u2013 Oct. 23, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.317, "game": "North Texas at Charlotte", "dateTime": "Week 9 \u2013 Oct. 24, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.311, "game": "Toledo at Washington State", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.285, "game": "SMU at Wake Forest", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.282, "game": "Kennesaw State at FIU", "dateTime": "Week 9 \u2013 Oct. 21, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.265, "game": "San Diego State at Fresno State", "dateTime": "Week 9 \u2013 Oct. 25, 3:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.212, "game": "Rutgers at Purdue", "dateTime": "Week 9 \u2013 Oct. 25, Noon ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.11, "game": "Oklahoma State at Texas Tech", "dateTime": "Week 9 \u2013 Oct. 25, 4:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 0.033, "game": "Appalachian State at Old Dominion", "dateTime": "Week 9 - Oct. 25, Noon ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 9}, {"viewers": 7.8, "game": "Florida vs. Georgia", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 7.187, "game": "Penn State at Ohio State", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 4.8, "game": "Oklahoma at Tennessee", "dateTime": "Week 10 \u2013 Nov. 1, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 4.5, "game": "Vanderbilt at Texas", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 3.131, "game": "Texas Tech at Kansas State", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 2.894, "game": "Indiana at Maryland", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 2.077, "game": "USC at Nebraska", "dateTime": "Week 10 \u2013 Nov. 1, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.726, "game": "Notre Dame at Boston College", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.606, "game": "Purdue at Michigan", "dateTime": "Week 10 \u2013 Nov. 1, 7 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.496, "game": "Miami at SMU", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.32, "game": "South Carolina at Ole Miss", "dateTime": "Week 10 \u2013 Nov. 1, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.031, "game": "Army at Air Force", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 1.02, "game": "Michigan State at Minnesota", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.991, "game": "Rutgers at Illinois", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.983, "game": "North Carolina at Syracuse", "dateTime": "Week 10 \u2013 Oct. 31, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.823, "game": "Washington State at Oregon State", "dateTime": "Week 10 \u2013 Nov. 1, 7:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.819, "game": "Cincinnati at Utah", "dateTime": "Week 10 \u2013 Nov. 1, 10:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.659, "game": "Tulane at UTSA", "dateTime": "Week 10 \u2013 Oct. 30, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.615, "game": "Arizona State at Iowa State", "dateTime": "Week 10 \u2013 Nov. 1, 12:45 p.m. ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.604, "game": "Georgia Tech at NC State", "dateTime": "Week 10 \u2013 Nov. 1, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.593, "game": "Louisville at Virginia Tech", "dateTime": "Week 10 \u2013 Nov. 1, 3 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.485, "game": "West Virginia at Houston", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.379, "game": "Fresno State at Boise State", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.374, "game": "Arizona at Colorado", "dateTime": "Week 10 \u2013 Nov. 1, 7 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.327, "game": "Virginia at Cal", "dateTime": "Week 10 \u2013 Nov. 1, 3:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.303, "game": "Jacksonville State at MTSU", "dateTime": "Week 10 \u2013 Oct. 29, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.288, "game": "Marshall at Coastal Carolina", "dateTime": "Week 10 \u2013 Oct. 30, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.245, "game": "James Madison at Texas State", "dateTime": "Week 10 \u2013 Oct. 28, 8 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.244, "game": "Memphis at Rice", "dateTime": "Week 10 \u2013 Oct. 31, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.216, "game": "Navy at North Texas", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.058, "game": "UCF at Baylor", "dateTime": "Week 10 \u2013 Nov. 1, 12 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.05, "game": "UTEP at Kennesaw State", "dateTime": "Week 10 \u2013 Oct. 28, 8 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.032, "game": "Central Michigan at Western Michigan", "dateTime": "Week 10 \u2013 Nov. 1, 4 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 0.009, "game": "Arkansas State at Troy", "dateTime": "Week 10 \u2013 Nov. 1, 8 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 10}, {"viewers": 7.541, "game": "LSU at Alabama", "dateTime": "Week 11 \u2013 Nov. 8, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 6.025, "game": "Indiana at Penn State", "dateTime": "Week 11\u00a0\u2013 Nov. 8, Noon ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 5.37, "game": "Oregon at Iowa", "dateTime": "Week 11 \u2013 Nov. 8, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 4.871, "game": "Texas A&M at Missouri", "dateTime": "Week 11 \u2013 Nov. 8, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 3.976, "game": "BYU at Texas Tech", "dateTime": "Week 11 \u2013 Nov. 8, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 3.192, "game": "Navy at Notre Dame", "dateTime": "Week 11 \u2013 Nov. 8, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 2.419, "game": "Iowa State at TCU", "dateTime": "Week 11 \u2013 Nov. 8, 3:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 2.324, "game": "Georgia at Mississippi State", "dateTime": "Week 11 \u2013 Nov. 8, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 2.248, "game": "Nebraska at UCLA", "dateTime": "Week 11 \u2013 Nov. 8, 9 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 1.912, "game": "Northwestern at USC", "dateTime": "Week 11 \u2013 Nov. 7, 9 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 1.847, "game": "Ohio State at Purdue", "dateTime": "Week 11 \u2013 Nov. 8, 1 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 1.198, "game": "Syracuse at Miami", "dateTime": "Week 11 \u2013 Nov. 8, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 1.088, "game": "Washington at Wisconsin", "dateTime": "Week 11 \u2013 Nov. 8, 4:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.792, "game": "Tulane at Memphis", "dateTime": "Week 11 \u2013 Nov. 7, 9 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.734, "game": "Wake Forest at Virginia", "dateTime": "Week 11 \u2013 Nov. 8, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.652, "game": "Houston at UCF", "dateTime": "Week 11 \u2013 Nov. 7, 8:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.598, "game": "Colorado at West Virginia", "dateTime": "Week 11 \u2013 Nov. 8, Noon ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.586, "game": "UTSA at USF", "dateTime": "Week 11 \u2013 Nov. 6, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.514, "game": "Stanford at North Carolina", "dateTime": "Week 11 \u2013 Nov. 8, 4:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.48, "game": "Kansas at Arizona", "dateTime": "Week 11 \u2013 Nov. 8, 3:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.471, "game": "Miami (OH) at Ohio", "dateTime": "Week 11 \u2013 Nov. 4, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.45, "game": "Cal at Louisville", "dateTime": "Week 11 \u2013 Nov. 8, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.301, "game": "Northern Illinois at Toledo", "dateTime": "Week 11 \u2013 Nov. 5, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.295, "game": "Sam Houston at Oregon State", "dateTime": "Week 11 \u2013 Nov. 8, 10 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.259, "game": "Maryland at Rutgers", "dateTime": "Week 11 \u2013 Nov. 8, 2:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.22, "game": "Georgia Southern at App State", "dateTime": "Week 11 \u2013 Nov. 6, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.203, "game": "Air Force at San Jose State", "dateTime": "Week 11 \u2013 Nov. 8, 6 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.193, "game": "UNLV at Colorado State", "dateTime": "Week 11 \u2013 Nov. 8, 9:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.118, "game": "James Madison at Marshall", "dateTime": "Week 11 \u2013 Nov. 8, Noon ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.099, "game": "Kent State at Ball State", "dateTime": "Week 11 \u2013 Nov. 5, 7 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 0.027, "game": "Southern Miss at Arkansas State", "dateTime": "Week 11 \u2013 Nov. 8, Noon ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 11}, {"viewers": 10.48, "game": "Oklahoma at Alabama", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 10.43, "game": "Texas at Georgia", "dateTime": "Week 12 \u2013 Nov. 15, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 4.28, "game": "South Carolina at Texas A&M", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 3.956, "game": "Notre Dame at Pitt", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 3.764, "game": "Michigan at Northwestern", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 3.376, "game": "UCLA at Ohio State", "dateTime": "Week 12 \u2013 Nov. 15, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 2.564, "game": "Clemson at Louisville", "dateTime": "Week 12 \u2013 Nov. 14, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 2.501, "game": "Florida at Ole Miss", "dateTime": "Week 12 \u2013 Nov. 15, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 2.476, "game": "Penn State at Michigan State", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 2.327, "game": "Minnesota at Oregon", "dateTime": "Week 12\u00a0\u2013 Nov. 14, 9 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 1.563, "game": "TCU at BYU", "dateTime": "Week 12 \u2013 Nov. 15, 10:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 1.44, "game": "Iowa at USC", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 1.398, "game": "UCF at Texas Tech", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 1.38, "game": "NC State at Miami", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 1.058, "game": "Wisconsin at Indiana", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.509, "game": "Troy at Old Dominion", "dateTime": "Week 12 \u2013 Nov. 13, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.463, "game": "USF at Navy", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.457, "game": "Purdue at Washington", "dateTime": "Week 12 \u2013 Nov. 15, 7 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.443, "game": "Virginia at Duke", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.415, "game": "Utah at Baylor", "dateTime": "Week 12 \u2013 Nov. 15, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.409, "game": "West Virginia at Arizona State", "dateTime": "Week 12 \u2013 Nov. 15, 1 p.m. ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.402, "game": "North Carolina at Wake Forest", "dateTime": "Week 12 \u2013 Nov. 15, 4:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.388, "game": "Maryland at Illinois", "dateTime": "Week 12 \u2013 Nov. 15, 3:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.353, "game": "Arizona at Cincinnati", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.349, "game": "Toledo at Miami (OH)", "dateTime": "Week 12 \u2013 Nov. 12, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.312, "game": "Ohio at Western Michigan", "dateTime": "Week 12 \u2013 Nov. 11, 8 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.301, "game": "Louisiana Tech at Washington State", "dateTime": "Week 12 \u2013 Nov. 15, 10 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.146, "game": "Wyoming at Fresno State", "dateTime": "Week 12 \u2013 Nov. 15, 10:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.133, "game": "Kansas State at Oklahoma State", "dateTime": "Week 12 \u2013 Nov. 15, Noon ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.07, "game": "Kent State at Akron", "dateTime": "Week 12 \u2013 Nov. 11, 7:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.054, "game": "Memphis at ECU", "dateTime": "Week 12 \u2013 Nov. 15, 4 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.033, "game": "NIU at UMass", "dateTime": "Week 12 \u2013 Nov. 12, 7 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 0.031, "game": "Kennesaw State at Jax State", "dateTime": "Week 12 \u2013 Nov. 15, 8 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 12}, {"viewers": 5.6, "game": "Arkansas at Texas", "dateTime": "Week 13 \u2013 Nov. 22, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 5.428, "game": "USC at Oregon", "dateTime": "Week 13 \u2013 Nov. 22, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 5.4, "game": "Missouri at Oklahoma", "dateTime": "Week 13 \u2013 Nov. 22, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 4.8, "game": "Tennessee at Florida", "dateTime": "Week 13 \u2013 Nov. 22, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 4.063, "game": "Rutgers at Ohio State", "dateTime": "Week 13 \u2013 Nov. 22, Noon ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 3.104, "game": "Nebraska at Penn State", "dateTime": "Week 13 \u2013 Nov. 22, 7 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 2.6, "game": "BYU at Cincinnati", "dateTime": "Week 13 \u2013 Nov. 22, 8 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 2.1, "game": "Florida State at NC State", "dateTime": "Week 13 \u2013 Nov. 21, 8 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 2.034, "game": "Pitt at Georgia Tech", "dateTime": "Week 13 \u2013 Nov. 22, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.942, "game": "Miami at Virginia Tech", "dateTime": "Week 13 \u2013 Nov. 22, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.887, "game": "Syracuse at Notre Dame", "dateTime": "Week 13 \u2013 Nov. 22, 3:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.617, "game": "Washington at UCLA", "dateTime": "Week 13 \u2013 Nov. 22, 10:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.485, "game": "Michigan at Maryland", "dateTime": "Week 13 \u2013 Nov. 22, 4 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.292, "game": "TCU at Houston", "dateTime": "Week 13 \u2013 Nov. 22, 4 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.144, "game": "Kentucky at Vanderbilt", "dateTime": "Week 13 \u2013 Nov. 22, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.106, "game": "Arizona State at Colorado", "dateTime": "Week 13 \u2013 Nov. 22, 8 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 1.103, "game": "Michigan State at Iowa", "dateTime": "Week 13\u00a0\u2013 Nov. 22, 3:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.979, "game": "Illinois at Wisconsin", "dateTime": "Week 13 \u2013 Nov. 22, 7:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.955, "game": "Kansas State at Utah", "dateTime": "Week 13 - Nov. 22, 4 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.695, "game": "Kansas at Iowa State", "dateTime": "Week 13 \u2013 Nov. 22, Noon ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.441, "game": "Minnesota at Northwestern", "dateTime": "Week 13 \u2013 Nov. 22, Noon ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.357, "game": "Louisville at SMU", "dateTime": "Week 13 - Nov. 22, Noon ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.327, "game": "Miami (OH) at Buffalo", "dateTime": "Week 13 \u2013 Nov. 19, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.3, "game": "Baylor at Arizona", "dateTime": "Week 13 \u2013 Nov. 22, 1 p.m. ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.299, "game": "Colorado State at Boise State", "dateTime": "Week 13 \u2013 Nov. 22, 7 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.288, "game": "Furman at Clemson", "dateTime": "Week 13 - Nov. 22, 4:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.279, "game": "Western Michigan at NIU", "dateTime": "Week 13 \u2013 Nov. 22, 7 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.269, "game": "Hawaii at UNLV", "dateTime": "Week 13 \u2013 Nov. 121, 10:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.146, "game": "San Jose State at San Diego State", "dateTime": "Week 13 \u2013 Nov. 22, 10:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.068, "game": "Central Michigan at Kent State", "dateTime": "Week 13 \u2013 Nov. 19, 7 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.059, "game": "Akron at Bowling Green", "dateTime": "Week 13 \u2013 Nov. 18, 7 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.045, "game": "North Texas at Rice", "dateTime": "Week 13 \u2013 Nov. 22, 7:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 0.043, "game": "Tulane at Temple", "dateTime": "Week 13 \u2013 Nov. 22, 3:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 13}, {"viewers": 18.424, "game": "Ohio State vs. Michigan", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 13.044, "game": "Texas vs. Texas A&M", "dateTime": "Week 14 \u2013 Nov. 28, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 11.31, "game": "Alabama vs. Auburn", "dateTime": "Week 14 \u2013 Nov. 29, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 8.716, "game": "Georgia vs. Georgia Tech", "dateTime": "Week 14 \u2013 Nov. 28, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 6.385, "game": "LSU vs. Oklahoma", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 5.232, "game": "Ole Miss vs. Mississippi State", "dateTime": "Week 14 \u2013 Nov. 28, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 4.01, "game": "Vanderbilt vs. Tennessee", "dateTime": "Week 14\u00a0\u2013 Nov. 29, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 4.27, "game": "Oregon vs. Washington", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 3.769, "game": "Iowa vs. Nebraska", "dateTime": "Week 14 \u2013 Nov. 28, 3:30 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 2.741, "game": "Cincinnati vs. TCU", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 2.685, "game": "Indiana vs. Purdue", "dateTime": "Week 14 \u2013\u00a0Nov. 28, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 2.224, "game": "UCLA vs. USC", "dateTime": "Week 14 \u2013 Nov. 29, 7:30 p.m. ET", "network": "NBC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 2.217, "game": "Miami vs. Pitt", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 2.008, "game": "Boise State vs. Utah State", "dateTime": "Week 14 \u2013 Nov. 28, 4 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.824, "game": "Arizona vs. Arizona State", "dateTime": "Week 14 \u2013 Nov. 28, 9 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.761, "game": "Florida State vs. Florida", "dateTime": "Week 14 \u2013 Nov. 29, 4:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.528, "game": "Northwestern vs. Illinois", "dateTime": "Week 14 \u2013 Nov. 29, 7:30 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.518, "game": "Notre Dame vs. Stanford", "dateTime": "Week 14 \u2013 Nov. 29, 10:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.404, "game": "Virginia Tech vs. Virginia", "dateTime": "Week 14 \u2013 Nov. 29, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.274, "game": "Wisconsin vs. Minnesota", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 1.116, "game": "Utah vs. Kansas", "dateTime": "Week 14\u00a0\u2013 Nov. 28, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.95, "game": "Penn State vs. Rutgers", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "BTN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.895, "game": "Texas Tech vs. West Virginia", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.78, "game": "Navy vs. Memphis", "dateTime": "Week 14 \u2013 Nov. 27, 7:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.716, "game": "UCF vs. BYU", "dateTime": "Week 14 - Nov. 29, 1 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.66, "game": "Maryland vs. Michigan State", "dateTime": "Week 14 \u2013 Nov. 29, 7 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.531, "game": "SMU vs. Cal", "dateTime": "Week 14 \u2013 Nov. 29, 8 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.515, "game": "Oregon State vs. Washington State", "dateTime": "Week 14 \u2013 Nov. 29, 6:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.48, "game": "Temple vs. North Texas", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.468, "game": "Colorado vs. Kansas State", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.403, "game": "Western Michigan vs. Eastern Michigan", "dateTime": "Week 14 \u2013 Nov. 25, 7:30 p.m. ET", "network": "ESPN2", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.305, "game": "Boston College vs. Syracuse", "dateTime": "Week 14 \u2013 Nov. 29, 3 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.223, "game": "Fresno State vs. San Jose State", "dateTime": "Week 14 \u2013 Nov. 29, 10:30 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.221, "game": "Houston vs. Baylor", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "TNT", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.148, "game": "Iowa State vs. Oklahoma State", "dateTime": "Week 14 \u2013 Nov. 29, Noon ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.148, "game": "Air Force vs. Colorado State", "dateTime": "Week 14 \u2013 Nov. 28, 3 p.m. ET", "network": "FS1", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.063, "game": "Ohio vs. Buffalo", "dateTime": "Week 14 \u2013 Nov. 28, Noon ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.06, "game": "Bowling Green vs. UMass", "dateTime": "Week 14 \u2013 Nov. 25, 4:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.038, "game": "Charlotte vs. Tulane", "dateTime": "Week 14 \u2013 Nov. 29, 7:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 0.036, "game": "James Madison vs. Coastal Carolina", "dateTime": "Week 14 \u2013 Nov. 29, 3:30 p.m. ET", "network": "ESPNU", "source": "Nielsen", "phase": "Regular Season", "week": 14}, {"viewers": 18.332, "game": "Big Ten: Indiana vs. Ohio State", "dateTime": "Dec. 6, 8 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 16.865, "game": "SEC: Georgia vs. Alabama", "dateTime": "Dec. 6, 4 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 8.988, "game": "Big 12: BYU vs. Texas Tech", "dateTime": "Dec. 6, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 3.88, "game": "ACC: Duke vs. Virginia", "dateTime": "Dec. 6, 8 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 2.412, "game": "American: Tulane vs. North Texas", "dateTime": "Dec. 5, 8 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 1.516, "game": "Mountain West: UNLV vs. Boise State", "dateTime": "Dec. 5, 8 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 1.146, "game": "Sun Belt: Troy vs. James Madison", "dateTime": "Dec. 5, 7 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 1.061, "game": "MAC: Miami (OH) vs. Western Michigan", "dateTime": "Dec. 6, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Conference Championship", "week": null}, {"viewers": 7.84, "game": "Army vs. Navy", "dateTime": "Dec, 14, 3 p.m. ET", "network": "CBS", "source": "https://x.com/ArmyNavyGame/status/2001075441310839164?s=20", "phase": "Army-Navy", "week": null}, {"viewers": 9.051, "game": "Citrus Bowl: Michigan vs. Texas", "dateTime": "Dec. 31, 3 p.m. ET", "network": "ABC", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 8.696, "game": "Pop-Tarts Bowl: BYU vs. Georgia Tech", "dateTime": "Dec. 27, 3:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 7.604, "game": "Pinstripe Bowl: Penn State vs. Clemson", "dateTime": "Dec. 27, Noon ET", "network": "ABC", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 5.966, "game": "Gator Bowl: Virginia vs. Missouri", "dateTime": "Dec. 27, 7:30 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 5.384, "game": "Music City Bowl: Tennessee vs. Illinois", "dateTime": "Dec. 30, 5:30 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 4.92, "game": "Alamo Bowl: USC vs. TCU", "dateTime": "Dec. 30, 9 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 4.595, "game": "ReliaQuest Bowl: Iowa vs. Vanderbilt", "dateTime": "Dec. 31, Noon ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 4.429, "game": "Rate Bowl: New Mexico vs. Minnesota", "dateTime": "Dec. 26, 4:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 3.786, "game": "L.A. Bowl: Boise State vs. Washington", "dateTime": "Dec. 13, 8 p.m. ET", "network": "ABC", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 3.435, "game": "Liberty Bowl: Navy vs. Cincinnati", "dateTime": "Jan. 2, 4:30 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 3.132, "game": "First Responder Bowl: FIU vs. UTSA", "dateTime": "Dec. 26, 8 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 3.022, "game": "Las Vegas Bowl: Nebraska vs. Utah", "dateTime": "Dec. 31, 3:30 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 2.923, "game": "Texas Bowl: LSU vs. Houston", "dateTime": "Dec. 27, 9:15 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.701, "game": "Hawaii Bowl: Cal vs. Hawaii", "dateTime": "Dec. 24, 8 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.614, "game": "Duke's Mayo Bowl: Wake Forest vs. Mississippi State", "dateTime": "Jan. 2, 8 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 2.514, "game": "Military Bowl: Pitt vs. ECU", "dateTime": "Dec. 27, Noon ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.393, "game": "GameAbove Sports Bowl: Northwestern vs. Central Michigan", "dateTime": "Dec. 26, 1 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.315, "game": "Celebration Bowl: South Carolina State vs. Prairie View A&M", "dateTime": "Dec. 13, Noon ET", "network": "ABC", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 2.338, "game": "Holiday Bowl: Arizona vs. SMU", "dateTime": "Jan. 2, 8 p.m. ET", "network": "FOX", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.168, "game": "Sun Bowl: Arizona State vs. Duke", "dateTime": "Dec. 31, 2 p.m. ET", "network": "CBS", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 2.0, "game": "Western Kentucky vs. Southern Miss", "dateTime": "Dec. 23, 5:30 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.8, "game": "Fenway Bowl: UConn vs. Army", "dateTime": "Dec. 27, 2:15 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.801, "game": "Armed Forces Bowl: Rice vs. Texas State", "dateTime": "Jan. 2, 1 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.754, "game": "Independence Bowl: Coastal Carolina vs. Louisiana Tech", "dateTime": "Dec. 30, 2 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.7, "game": "Frisco Bowl: UNLV vs. Ohio", "dateTime": "Dec. 23, 9 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.6, "game": "Bush's Boca Raton Bowl of Beans: Toledo vs. Louisville", "dateTime": "Dec. 23, 2 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.507, "game": "Gasparilla Bowl: Memphis vs. NC State", "dateTime": "Dec. 19, 2:30 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 1.4, "game": "New Mexico Bowl: North Texas vs. San Diego State", "dateTime": "Dec. 27, 5:45 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.2, "game": "Famous Idaho Potato Bowl: Washington State vs. Utah State", "dateTime": "Dec. 22, 2 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.2, "game": "Birmingham Bowl: Georgia Southern vs. Appalachian State", "dateTime": "Dec. 29, 2 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 1.185, "game": "68 Ventures Bowl: Louisiana vs. Delaware", "dateTime": "Dec. 17, 8:40 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 1.183, "game": "Cure Bowl: USF vs. Old Dominion", "dateTime": "Dec. 17, 5 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 0.959, "game": "Salute to Veterans Bowl: Troy vs. Jacksonville State", "dateTime": "Dec. 16, 9 p.m. ET", "network": "ESPN", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 0.809, "game": "Myrtle Beach Bowl: Kennesaw State vs. Western Michigan", "dateTime": "Dec. 19, 11 a.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 0.639, "game": "Arizona Bowl: Fresno State vs. Miami (OH)", "dateTime": "Dec. 27, 4:30 p.m. ET", "network": "The CW", "source": "Nielsen", "phase": "Bowl Game", "week": null}, {"viewers": 0.457, "game": "Xbox Bowl: Missouri State vs. Arkansas State", "dateTime": "Dec. 18, 9 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "Bowl Game", "week": null}, {"viewers": 30.1, "game": "National Championship: Indiana vs. Miami", "dateTime": "National Championship \u2013 Jan. 19, 7:30 p.m. ET", "network": "ESPN/ESPN2/ESPNU", "source": "https://x.com/ESPNPR/status/2014458069598585108?s=20", "phase": "CFP Playoff", "week": null}, {"viewers": 23.9, "game": "Rose Bowl: Alabama vs. Indiana", "dateTime": "Quarterfinal \u2013 Jan. 1, 4 p.m. ET", "network": "ESPN", "source": "https://x.com/espnpr/status/2008305017460003146?s=46", "phase": "CFP Playoff", "week": null}, {"viewers": 19.018, "game": "Cotton Bowl: Miami vs. Ohio State", "dateTime": "Quarterfinal \u2013 Dec. 31, 7:30 p.m. ET", "network": "ESPN", "source": "https://x.com/espnpr/status/2008305017460003146?s=47", "phase": "CFP Playoff", "week": null}, {"viewers": 18.664, "game": "Sugar Bowl: Ole Miss vs. Georgia", "dateTime": "Quarterfinal \u2013 Jan. 1, 7 p.m. ET", "network": "ESPN", "source": "https://x.com/espnpr/status/2008305017460003146?s=48", "phase": "CFP Playoff", "week": null}, {"viewers": 18.0, "game": "Peach Bowl: Indiana vs. Oregon", "dateTime": "Semifinal \u2013 Jan. 9, 7:30 p.m. ET", "network": "ESPN", "source": "ESPN PR", "phase": "CFP Playoff", "week": null}, {"viewers": 15.9, "game": "Orange Bowl: Oregon vs. Texas Tech", "dateTime": "Quarterfinal \u2013 Jan. 1, Noon ET", "network": "ESPN", "source": "https://x.com/espnpr/status/2008305017460003146?s=49", "phase": "CFP Playoff", "week": null}, {"viewers": 15.8, "game": "Fiesta Bowl: Miami vs. Ole Miss", "dateTime": "Semifinal \u2013 Jan. 8, 7:30 p.m. ET", "network": "ESPN", "source": "https://x.com/ESPNPR/status/2010800582223966571?s=20", "phase": "CFP Playoff", "week": null}, {"viewers": 14.9, "game": "Alabama at Oklahoma", "dateTime": "First Round \u2013 Dec. 19, 8 p.m. ET", "network": "ABC/ESPN", "source": "https://x.com/ESPNPR/status/2003601586791297236?s=20", "phase": "CFP Playoff", "week": null}, {"viewers": 14.8, "game": "Miami at Texas A&M", "dateTime": "First Round \u2013 Dec. 20, Noon ET", "network": "ABC/ESPN", "source": "https://x.com/ESPNPR/status/2003601586791297236?s=21", "phase": "CFP Playoff", "week": null}, {"viewers": 6.2, "game": "Tulane at Ole Miss", "dateTime": "First Round \u2013 Dec. 20, 3:30 p.m. ET", "network": "TNT/TBS/truTV", "source": "https://x.com/ESPNPR/status/2003601586791297236?s=22", "phase": "CFP Playoff", "week": null}, {"viewers": 4.4, "game": "James Madison at Oregon", "dateTime": "First Round \u2013 Dec. 20, 7:30 p.m. ET", "network": "TNT/TBS/truTV", "source": "https://x.com/ESPNPR/status/2003601586791297236?s=23", "phase": "CFP Playoff", "week": null}];
+const NETWORK_COLORS = {
+  "ABC": "#5E9CFF", "ESPN": "#E91518", "ESPN2": "#FF7A59", "ESPNU": "#FFB84D",
+  "FOX": "#3B6EF6", "FS1": "#1A4FD1", "NBC": "#B15CFF", "CBS": "#4DA6FF",
+  "BTN": "#8A8AFF", "TNT": "#FFC94D", "The CW": "#3FD1A6",
+  "TBS": "#FF8FA3", "truTV": "#5FD68A"
+};
 
-const PHASE_ORDER = ["Regular Season","Conference Championship","Army-Navy","Bowl Game","CFP Playoff"];
+let sortState = { key: "viewers", dir: "desc" };
+let filters = { search: "", week: "all", network: "all", phase: "all" };
 
-let state = { phase:"", network:"", week:"", search:"", sortCol:"viewers", sortDir:"desc" };
+function populateFilterOptions() {
+  const weekSel = document.getElementById('weekFilter');
+  const netSel = document.getElementById('networkFilter');
+  const phaseSel = document.getElementById('phaseFilter');
 
-function fmt(n){ return n.toFixed(3).replace(/0+$/,"").replace(/\.$/,"") ; }
-function fmtViewers(n){
-  // show up to 3 decimals, trim trailing zeros, keep at least 1 decimal
-  let s = n.toFixed(3);
-  s = s.replace(/0+$/,"");
-  if(s.endsWith(".")) s += "0";
-  return s;
-}
-
-function buildPeriodToggle(){
-  const weekNums = Array.from(new Set(DATA.filter(r=>r.week).map(r=>r.week))).sort((a,b)=>a-b);
-  const postseasonPhases = PHASE_ORDER.filter(p=>p!=="Regular Season" && DATA.some(r=>r.phase===p));
-
-  const options = [];
-  options.push({label:"All Games", phase:"", week:""});
-  weekNums.forEach(w=>options.push({label:"Wk. "+w, phase:"Regular Season", week:String(w)}));
-  postseasonPhases.forEach(p=>{
-    const shortLabel = {
-      "Conference Championship":"Conf. Championships",
-      "Army-Navy":"Army-Navy",
-      "Bowl Game":"Bowls",
-      "CFP Playoff":"CFP"
-    }[p] || p;
-    options.push({label:shortLabel, phase:p, week:""});
+  const weeksPresent = new Set(DATA.map(d => d.week));
+  WEEK_ORDER.filter(w => weeksPresent.has(w)).forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w; opt.textContent = w;
+    weekSel.appendChild(opt);
   });
 
-  const el = document.getElementById('periodSelect');
-  el.innerHTML = options.map(o=>
-    `<option value="${o.phase}|${o.week}">${o.label}</option>`
-  ).join("");
-
-  el.addEventListener('change', ()=>{
-    const [phase, week] = el.value.split('|');
-    state.phase = phase;
-    state.week = week;
-    renderTable();
-  });
-  syncPeriodToggle();
-}
-
-function syncPeriodToggle(){
-  const el = document.getElementById('periodSelect');
-  el.value = state.phase + '|' + state.week;
-}
-
-function buildFilters(){
-  const nets = ["All Networks", ...Array.from(new Set(DATA.map(r=>r.network))).sort()];
-  document.getElementById('fNetwork').innerHTML = nets.map(n=>`<option value="${n==='All Networks'?'':n}">${n}</option>`).join("");
-
-  document.getElementById('fNetwork').addEventListener('change', e=>{state.network=e.target.value; renderTable();});
-  document.getElementById('fSearch').addEventListener('input', e=>{state.search=e.target.value.toLowerCase(); renderTable();});
-  document.getElementById('fReset').addEventListener('click', ()=>{
-    state = { phase:"", network:"", week:"", search:"", sortCol:"viewers", sortDir:"desc" };
-    document.getElementById('fNetwork').value="";
-    document.getElementById('fSearch').value="";
-    syncPeriodToggle();
-    renderTable();
+  [...new Set(DATA.map(d => d.network))].sort().forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    netSel.appendChild(opt);
   });
 
-  document.querySelectorAll('thead th').forEach(th=>{
-    th.addEventListener('click', ()=>{
-      const col = th.dataset.col;
-      if(state.sortCol===col){ state.sortDir = state.sortDir==='desc'?'asc':'desc'; }
-      else { state.sortCol = col; state.sortDir = col==='viewers'?'desc':'asc'; }
-      renderTable();
-    });
+  [...new Set(DATA.map(d => d.phase))].sort().forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    phaseSel.appendChild(opt);
   });
 }
 
-function fmtGame(r){
-  let s = r.game;
-  s = s.replace(/^(Quarterfinal|Semifinal|First Round)\s*[:\u2013-]\s*/i, '');
-  if(r.phase === 'Bowl Game'){
-    s = s.replace(/^[^:]+Bowl\s*:\s*/i, '');
-  }
-  return s;
-}
-
-function phaseDisplay(r){
-  if(r.phase === 'CFP Playoff'){
-    const m = r.dateTime.match(/(National Championship|Quarterfinal|Semifinal|First Round)/i);
-    if(m && /first round/i.test(m[1])){
-      return 'CFP: R1';
-    }
-    return 'CFP';
-  }
-  if(r.phase === 'Bowl Game'){
-    const m = r.game.match(/^([^:]+Bowl)\s*:/i);
-    return m ? m[1] : r.phase;
-  }
-  if(r.phase === 'Regular Season' && r.week){
-    return 'Wk ' + r.week;
-  }
-  if(r.phase === 'Conference Championship'){
-    return 'Conf.<br>Champ.';
-  }
-  return r.phase;
-}
-
-function fmtDateTime(str){
-  const s = shortenDateTime(str);
-  const idx = s.indexOf(',');
-  if(idx === -1) return s;
-  const datePart = s.slice(0, idx).trim();
-  const timePart = s.slice(idx+1).trim();
-  return datePart + '<br>' + timePart;
-}
-
-function fmtNetwork(str){
-  const parts = str.split('/').map(s=>s.trim()).filter(Boolean);
-  return parts.join('<br>');
-}
-
-function shortenDateTime(str){
-  let s = str.replace(/\u00a0/g, ' ');
-  s = s.replace(/^(Mon|Tue|Tues|Wed|Thu|Thurs|Fri|Sat|Sun)[a-zA-Z]*\.?,?\s+/, '');
-  s = s.replace(/Week\s+\d+\s*[\u2013\u2011-]\s*/i, '');
-  s = s.replace(/Quarterfinal\s*[\u2013\u2011-]\s*/i, '');
-  s = s.replace(/Semifinal\s*[\u2013\u2011-]\s*/i, '');
-  s = s.replace(/First Round\s*[\u2013\u2011-]\s*/i, '');
-  s = s.replace(/National Championship\s*[\u2013\u2011-]\s*/i, '');
-  s = s.replace(/p\.m\./gi, 'pm');
-  s = s.replace(/a\.m\./gi, 'am');
-  s = s.replace(/\b(Jan|Feb|Mar|Apr|Aug|Sept|Sep|Oct|Nov|Dec)\./g, '$1');
-  s = s.replace(/\bNoon\b/i, '12pm');
-  s = s.replace(/\u2013/g, '-');
-  s = s.replace(/\s+/g, ' ').trim();
-  return s;
-}
-
-function renderTable(){
-  let rows = DATA.filter(r=>{
-    if(state.phase && r.phase!==state.phase) return false;
-    if(state.network && r.network!==state.network) return false;
-    if(state.week && String(r.week)!==state.week) return false;
-    if(state.search && !(r.game.toLowerCase().includes(state.search) || r.network.toLowerCase().includes(state.search) || r.dateTime.toLowerCase().includes(state.search))) return false;
-    return true;
+function getFiltered() {
+  return DATA.filter(d => {
+    const matchesSearch = d.game.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesWeek = filters.week === 'all' || d.week === filters.week;
+    const matchesNetwork = filters.network === 'all' || d.network === filters.network;
+    const matchesPhase = filters.phase === 'all' || d.phase === filters.phase;
+    return matchesSearch && matchesWeek && matchesNetwork && matchesPhase;
   });
+}
 
-  rows = rows.slice().sort((a,b)=>{
-    let av=a[state.sortCol], bv=b[state.sortCol];
-    if(typeof av==='string'){ av=av.toLowerCase(); bv=bv.toLowerCase(); }
-    if(av<bv) return state.sortDir==='asc'?-1:1;
-    if(av>bv) return state.sortDir==='asc'?1:-1;
+function getSorted(rows) {
+  const { key, dir } = sortState;
+  return [...rows].sort((a, b) => {
+    let av = a[key], bv = b[key];
+    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if (av < bv) return dir === 'asc' ? -1 : 1;
+    if (av > bv) return dir === 'asc' ? 1 : -1;
     return 0;
   });
+}
 
-  document.getElementById('tableBody').innerHTML = rows.map(r=>`
+function netBadge(network) {
+  return network.split('/').map(n => {
+    const color = NETWORK_COLORS[n] || '#A2A2A8';
+    return `<span class="net-badge" style="--nc:${color}">${n}</span>`;
+  }).join(' ');
+}
+
+function render() {
+  const rows = getSorted(getFiltered());
+  const tbody = document.getElementById('tableBody');
+  const cardList = document.getElementById('cardList');
+  const emptyState = document.getElementById('emptyState');
+  const resultCount = document.getElementById('resultCount');
+
+  resultCount.textContent = `${rows.length} of ${DATA.length} games`;
+  emptyState.style.display = rows.length ? 'none' : 'block';
+
+  tbody.innerHTML = rows.map(d => `
     <tr>
-      <td class="col-viewers" data-label="Viewers (M)">${fmtViewers(r.viewers)}</td>
-      <td class="col-game" data-label="">${fmtGame(r)}</td>
-      <td class="col-datetime" data-label="Date / Time">${fmtDateTime(r.dateTime)}</td>
-      <td class="col-network" data-label="Network">${fmtNetwork(r.network)}</td>
-      <td class="col-phase" data-label="Phase">${phaseDisplay(r)}</td>
+      <td class="col-viewers">${d.viewers}</td>
+      <td class="col-game">${d.game}</td>
+      <td>${d.datetime}</td>
+      <td>${netBadge(d.network)}</td>
+      <td>${d.week}</td>
     </tr>
-  `).join("");
+  `).join('');
 
-  document.querySelectorAll('thead th').forEach(th=>{
-    th.classList.toggle('active', th.dataset.col===state.sortCol);
+  cardList.innerHTML = rows.map(d => `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-game">${d.game}</div>
+        <div class="card-viewers"><small>Viewers</small>${d.viewers}M</div>
+      </div>
+      <div class="card-bottom">
+        <span>${d.datetime}</span>
+        <span class="dot">&bull;</span>
+        <span>${d.week}</span>
+        <span class="dot">&bull;</span>
+        <span>${netBadge(d.network)}</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.classList.toggle('active', th.dataset.sort === sortState.key);
+    const arrow = th.querySelector('.arrow');
+    if (th.dataset.sort === sortState.key) {
+      arrow.innerHTML = sortState.dir === 'asc' ? '&#9650;' : '&#9660;';
+    } else {
+      arrow.innerHTML = '&#9660;';
+    }
   });
 }
 
-function buildThemeToggle(){
-  const btn = document.getElementById('themeToggle');
-  const icon = document.getElementById('themeIcon');
-  function applyTheme(mode){
-    document.getElementById('cfbrt-widget').dataset.theme = mode;
-    icon.textContent = mode === 'dark' ? '☀' : '☾';
-    btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
-  }
-  applyTheme('dark');
-  btn.addEventListener('click', ()=>{
-    const next = document.getElementById('cfbrt-widget').dataset.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-  });
-}
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.tabIndex = 0;
+  const handler = () => {
+    const key = th.dataset.sort;
+    if (sortState.key === key) {
+      sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortState = { key, dir: th.dataset.type === 'num' ? 'desc' : 'asc' };
+    }
+    render();
+  };
+  th.addEventListener('click', handler);
+  th.addEventListener('keypress', e => { if (e.key === 'Enter') handler(); });
+});
 
-function safe(fn, label){
-  try { fn(); } catch(err){ console.error('Tracker init step failed:', label, err); }
-}
+document.getElementById('searchInput').addEventListener('input', e => {
+  filters.search = e.target.value;
+  render();
+});
+document.getElementById('weekFilter').addEventListener('change', e => {
+  filters.week = e.target.value;
+  render();
+});
+document.getElementById('networkFilter').addEventListener('change', e => {
+  filters.network = e.target.value;
+  render();
+});
+document.getElementById('phaseFilter').addEventListener('change', e => {
+  filters.phase = e.target.value;
+  render();
+});
 
-safe(buildThemeToggle, 'themeToggle');
-safe(buildPeriodToggle, 'periodToggle');
-safe(buildFilters, 'filters');
-safe(renderTable, 'table');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+themeToggle.addEventListener('click', () => {
+  const body = document.body;
+  const isDark = body.getAttribute('data-theme') === 'dark';
+  body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeToggle.setAttribute('aria-pressed', String(!isDark));
+  themeIcon.innerHTML = isDark ? '&#9728;' : '&#9789;';
+  themeLabel.textContent = isDark ? 'Light' : 'Dark';
+});
 
-
-})();
+populateFilterOptions();
+render();
 </script>
+</body>
+</html>
