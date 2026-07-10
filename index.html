@@ -98,12 +98,17 @@
   .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 18px;
   }
 
+  @media (min-width: 640px) {
+    .controls { flex-wrap: nowrap; }
+  }
+
   .search-box {
-    flex: 1 1 220px;
+    flex: 1 1 120px;
+    max-width: 170px;
     position: relative;
   }
   .search-box input {
@@ -111,18 +116,18 @@
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 10px 12px 10px 34px;
+    padding: 6px 8px 6px 26px;
     border-radius: 8px;
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: 12px;
   }
   .search-box::before {
     content: "";
     position: absolute;
-    left: 12px;
+    left: 9px;
     top: 50%;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     transform: translateY(-50%);
     border: 2px solid var(--text-dim);
     border-radius: 50%;
@@ -131,9 +136,9 @@
   .search-box::after {
     content: "";
     position: absolute;
-    left: 21px;
+    left: 16px;
     top: 60%;
-    width: 6px;
+    width: 5px;
     height: 2px;
     background: var(--text-dim);
     transform: rotate(45deg);
@@ -144,11 +149,13 @@
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 10px 12px;
+    padding: 6px 7px;
     border-radius: 8px;
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
+    flex: 0 1 auto;
+    min-width: 0;
   }
 
   .meta-row {
