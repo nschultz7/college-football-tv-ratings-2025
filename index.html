@@ -165,23 +165,63 @@
   #cfbrt-widget .filters select, #cfbrt-widget .filters input{font-size:16px;width:100%;padding:10px;}
   #cfbrt-widget .filters input{min-width:0;}
   #cfbrt-widget .reset-btn{width:100%;padding:10px;font-size:14px;}
-  #cfbrt-widget .table-scroll{overflow-x:hidden;}
-  #cfbrt-widget table{min-width:0;width:100%;table-layout:fixed;}
-  #cfbrt-widget thead th, #cfbrt-widget tbody td{
-    max-width:none;
-    white-space:normal;overflow-wrap:normal;word-break:normal;
-    font-size:11px;padding:8px 5px;
-  }
+  #cfbrt-widget .table-scroll{overflow-x:hidden;max-height:none;overflow-y:visible;border:none;}
+
+  #cfbrt-widget table{display:block;width:100%;}
+  #cfbrt-widget thead{display:block;}
+  #cfbrt-widget thead tr{display:flex;flex-wrap:wrap;gap:6px;}
   #cfbrt-widget thead th{
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    font-size:9.5px;padding:8px 4px;
+    display:inline-flex;align-items:center;
+    position:static;
+    width:auto;max-width:none;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 11px;
+    font-size:10px;
+    white-space:nowrap;overflow:visible;text-overflow:clip;
   }
-  #cfbrt-widget thead th:nth-child(1), #cfbrt-widget tbody td:nth-child(1){width:13%;}
-  #cfbrt-widget thead th:nth-child(2), #cfbrt-widget tbody td:nth-child(2){width:33%;}
-  #cfbrt-widget thead th:nth-child(3), #cfbrt-widget tbody td:nth-child(3){width:18%;}
-  #cfbrt-widget thead th:nth-child(4), #cfbrt-widget tbody td:nth-child(4){width:18%;}
-  #cfbrt-widget thead th:nth-child(5), #cfbrt-widget tbody td:nth-child(5){width:18%;}
-  #cfbrt-widget .col-phase{white-space:normal;word-break:normal;overflow-wrap:normal;font-size:10.5px;hyphens:none;}
+  #cfbrt-widget thead th.active{border-color:var(--gold);}
+
+  #cfbrt-widget tbody{display:block;}
+  #cfbrt-widget tbody tr{
+    display:flex;flex-direction:column;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:12px;
+    transition:transform .1s ease, background-color .1s ease;
+  }
+  #cfbrt-widget tbody tr:first-child{margin-top:16px;}
+  #cfbrt-widget tbody tr:active{transform:scale(0.98);background:var(--surface-2);}
+
+  #cfbrt-widget tbody td{
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    width:auto;max-width:none;
+    padding:6px 0;
+    border-bottom:1px solid var(--line);
+    font-size:12.5px;
+    white-space:normal;overflow-wrap:normal;word-break:normal;
+    text-align:right;
+  }
+  #cfbrt-widget tbody td:last-child{border-bottom:none;}
+  #cfbrt-widget tbody td::before{
+    content:attr(data-label);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--chalk-dim);flex-shrink:0;text-align:left;
+  }
+  #cfbrt-widget tbody td.col-game{
+    order:-1;
+    display:block;
+    text-align:left;
+    font-weight:700;font-size:15px;color:var(--chalk);
+    padding-bottom:10px;margin-bottom:2px;
+    border-bottom:1px solid var(--line);
+  }
+  #cfbrt-widget tbody td.col-game::before{content:none;}
+  #cfbrt-widget .col-phase{white-space:normal;word-break:normal;overflow-wrap:normal;}
 }
 </style>
 
@@ -385,11 +425,11 @@ function renderTable(){
 
   document.getElementById('tableBody').innerHTML = rows.map(r=>`
     <tr>
-      <td class="col-viewers">${fmtViewers(r.viewers)}</td>
-      <td class="col-game">${fmtGame(r)}</td>
-      <td class="col-datetime">${fmtDateTime(r.dateTime)}</td>
-      <td class="col-network">${fmtNetwork(r.network)}</td>
-      <td class="col-phase">${phaseDisplay(r)}</td>
+      <td class="col-viewers" data-label="Viewers (M)">${fmtViewers(r.viewers)}</td>
+      <td class="col-game" data-label="">${fmtGame(r)}</td>
+      <td class="col-datetime" data-label="Date / Time">${fmtDateTime(r.dateTime)}</td>
+      <td class="col-network" data-label="Network">${fmtNetwork(r.network)}</td>
+      <td class="col-phase" data-label="Phase">${phaseDisplay(r)}</td>
     </tr>
   `).join("");
 
