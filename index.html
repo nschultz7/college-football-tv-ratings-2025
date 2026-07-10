@@ -463,7 +463,7 @@ function buildThemeToggle(){
     icon.textContent = mode === 'dark' ? '☀' : '☾';
     btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
   }
-  applyTheme('light');
+  applyTheme('dark');
   btn.addEventListener('click', ()=>{
     const next = document.getElementById('cfbrt-widget').dataset.theme === 'dark' ? 'light' : 'dark';
     applyTheme(next);
