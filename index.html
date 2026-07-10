@@ -326,12 +326,10 @@
     </select>
   </div>
 
-  <div class="meta-row"><span id="resultCount"></span></div>
-
   <table>
     <thead>
       <tr>
-        <th data-sort="viewers" data-type="num">Viewers (in millions) <span class="arrow">&#9660;</span></th>
+        <th data-sort="viewers" data-type="num">Viewers <span class="arrow">&#9660;</span></th>
         <th data-sort="game" data-type="str">Game <span class="arrow">&#9660;</span></th>
         <th data-sort="datetime" data-type="str">Date / Time <span class="arrow">&#9660;</span></th>
         <th data-sort="network" data-type="str">Network <span class="arrow">&#9660;</span></th>
@@ -420,14 +418,11 @@ function render() {
   const tbody = document.getElementById('tableBody');
   const cardList = document.getElementById('cardList');
   const emptyState = document.getElementById('emptyState');
-  const resultCount = document.getElementById('resultCount');
-
-  resultCount.textContent = `${rows.length} of ${DATA.length} games`;
   emptyState.style.display = rows.length ? 'none' : 'block';
 
   tbody.innerHTML = rows.map(d => `
     <tr>
-      <td class="col-viewers">${d.viewers}</td>
+      <td class="col-viewers">${d.viewers} M</td>
       <td class="col-game">${d.game}</td>
       <td>${d.datetime}</td>
       <td>${netBadge(d.network)}</td>
@@ -439,7 +434,7 @@ function render() {
     <div class="card">
       <div class="card-top">
         <div class="card-game">${d.game}</div>
-        <div class="card-viewers"><small>Viewers</small>${d.viewers}M</div>
+        <div class="card-viewers"><small>Viewers</small>${d.viewers} M</div>
       </div>
       <div class="card-bottom">
         <span>${d.datetime}</span>
